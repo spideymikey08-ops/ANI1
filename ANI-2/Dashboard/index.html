@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-
+ 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -11,75 +11,69 @@
     <link rel="stylesheet" href="dashboard.css">
     <link rel="stylesheet" href="../Chat/chat.css">
 </head>
-
+ 
 <body data-page="dashboard">
     <div class="app">
         <aside class="sidebar" id="sidebar"></aside>
-
+ 
         <main class="main">
             <header class="page-header header-top-bar">
                 <div>
                     <h1>Dashboard</h1>
                     <p>Here's what's happening across the rice plots today.</p>
                 </div>
-
+ 
                 <div class="side-note header-user-wrap">
                     <div id="sidebarUser" class="side-user" hidden></div>
                     <a href="#" id="logoutBtn" class="logout-link">🚪 Logout</a>
                 </div>
             </header>
-
+ 
             <div id="dashError" class="error-box" hidden></div>
-
+ 
             <div class="stats">
-                <div class="stat">
+                <div class="stat stat-green">
+                    <span>Rice plots</span>
                     <b id="statRice">–</b>
-                    <span>Rice Plots</span>
                 </div>
-
-                <div class="stat">
+ 
+                <div class="stat stat-blue">
+                    <span>Watering due today</span>
                     <b id="statTasks">–</b>
-                    <span>Watering Tasks Due Today</span>
                 </div>
-
-                <div class="stat">
+ 
+                <div class="stat stat-gold">
+                    <span>Harvests this week</span>
                     <b id="statHarvests">–</b>
-                    <span>Harvests This Week</span>
                 </div>
             </div>
-
-            <section class="card">
-                <h2>Plot Overview</h2>
-                <p>
-                    A quick visual of every plot — full add/edit tools live on the
-                    <a href="../Plots/plots.html">Plots page</a>.
-                </p>
-                <div class="plot-grid" id="plotGrid"></div>
-            </section>
-
-            <div class="two-col">
-                <section class="card">
-                    <h2>Today's Watering Tasks</h2>
+ 
+            <div class="dash-grid">
+                <section class="card dash-plots">
+                    <h2>Plot Overview</h2>
+                    <div class="plot-grid" id="plotGrid"></div>
+                </section>
+ 
+                <section class="card dash-watering">
+                    <h2>Today's Watering</h2>
                     <div id="taskList"></div>
                 </section>
-
-                <div class="stack">
-                    <section class="card">
-                        <h2>Recent Harvest</h2>
-                        <div id="harvestList"></div>
-                    </section>
-
-                    <section class="card">
-                        <h2>Seed Inventory</h2>
-                        <div id="seedList"></div>
-                    </section>
-                </div>
+ 
+                <section class="card dash-harvest">
+                    <h2>Recent Harvests</h2>
+                    <div id="harvestList"></div>
+                </section>
+ 
+                <section class="card dash-seeds">
+                    <h2>Seed Inventory</h2>
+                    <div id="seedList"></div>
+                </section>
             </div>
         </main>
     </div>
-
+ 
     <div id="toast" class="toast"></div>
-
+ 
     <template id="tpl-plot-card">
         <div class="plot-card">
             <strong data-field="name"></strong>
@@ -90,21 +84,21 @@
             </div>
         </div>
     </template>
-
+ 
     <template id="tpl-task-item">
         <div class="list-row">
             <span data-field="label"></span>
             <span class="badge" data-badge="state"></span>
         </div>
     </template>
-
+ 
     <template id="tpl-harvest-item">
         <div class="list-row">
             <span data-field="label"></span>
             <strong data-field="quantity"></strong>
         </div>
     </template>
-
+ 
     <template id="tpl-seed-item">
         <div class="list-row">
             <span data-field="name"></span>
@@ -114,15 +108,15 @@
             </strong>
         </div>
     </template>
-
+ 
     <template id="tpl-empty">
         <div class="empty" data-field="text"></div>
     </template>
-
+ 
     <script src="../assets/js/core.js"></script>
     <script src="../assets/js/layout.js"></script>
     <script src="dashboard.js"></script>
     <script src="../Chat/chat.js"></script>
 </body>
-
+ 
 </html>
