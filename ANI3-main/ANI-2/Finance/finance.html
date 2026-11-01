@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Ani — Farm Finance</title>
+    <link rel="stylesheet" href="../assets/css/base.css">
+    <link rel="stylesheet" href="../assets/css/layout.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <link rel="stylesheet" href="finance.css">
+    <link rel="stylesheet" href="../Chat/chat.css">
+</head>
+<body data-page="finance">
+    <div class="app">
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <main class="main">
+            <header class="page-header header-top-bar">
+                <div>
+                    <h1>Farm Finance</h1>
+                    <p>Record farm expenses and harvest sales to calculate your net profit or loss.</p>
+                </div>
+
+                <div class="side-note header-user-wrap">
+                    <div id="sidebarUser" class="side-user" hidden></div>
+                    <a href="#" id="logoutBtn" class="logout-link">🚪 Logout</a>
+                </div>
+            </header>
+
+            <!-- Filter finance card -->
+            <section class="card finance-filter-card">
+                <div class="finance-filter-info">
+                    <h2>Filter finance</h2>
+                    <p>Review totals by time period and rice plot.</p>
+                </div>
+
+                <div class="finance-filter-controls">
+                    <div class="finance-filter-field">
+                        <label for="financeDateFilter">Date range</label>
+                        <select id="financeDateFilter">
+                            <option value="all">All time</option>
+                            <option value="week">This week</option>
+                            <option value="month">This month</option>
+                            <option value="year">This year</option>
+                        </select>
+                    </div>
+
+                    <div class="finance-filter-field">
+                        <label for="financePlotFilter">Rice plot</label>
+                        <select id="financePlotFilter">
+                            <option value="all">All plots</option>
+                        </select>
+                    </div>
+
+                    <div class="finance-filter-field finance-filter-action">
+                        <button type="button" id="clearFinanceFilters" class="finance-btn-clear">Clear filters</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Summary statistics cards -->
+            <section class="finance-stats-grid">
+                <div class="finance-stat-card">
+                    <span class="stat-label">Total expenses</span>
+                    <strong id="totalExpenses" class="stat-val">₱0.00</strong>
+                </div>
+
+                <div class="finance-stat-card">
+                    <span class="stat-label">Total revenue</span>
+                    <strong id="totalRevenue" class="stat-val">₱0.00</strong>
+                </div>
+
+                <div class="finance-stat-card">
+                    <span class="stat-label">Net profit / loss</span>
+                    <strong id="netProfit" class="stat-val profit">₱0.00</strong>
+                </div>
+            </section>
+
+            <!-- Main grid: Record transaction & Transaction history -->
+            <div class="finance-grid">
+                <!-- Record transaction card -->
+                <section class="card finance-form-card">
+                    <h2>Record transaction</h2>
+                    <p>Record an expense or harvest income.</p>
+
+                    <form id="financeForm" class="finance-form">
+                        <div class="finance-field full">
+                            <label>Type</label>
+                            <div class="finance-type-toggle">
+                                <label class="finance-radio expense-choice active">
+                                    <input type="radio" name="transaction_type" value="Expense" checked>
+                                    <span>💸 Expense</span>
+                                </label>
+
+                                <label class="finance-radio income-choice">
+                                    <input type="radio" name="transaction_type" value="Income">
+                                    <span>💰 Income</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="finance-field">
+                            <label for="financePlot">Plot</label>
+                            <select name="plot_id" id="financePlot" required>
+                                <option value="">Loading plots...</option>
+                            </select>
+                        </div>
+
+                        <div class="finance-field">
+                            <label for="financeDate">Transaction Date</label>
+                            <input type="date" name="transaction_date" id="financeDate" required>
+                        </div>
+
+                        <div class="finance-field full">
+                            <label id="financeCategoryLabel">Expense Category</label>
+                            <div id="financeCategories" class="finance-category-list"></div>
+                            <input type="hidden" name="category" id="financeCategory" value="Seed">
+                        </div>
+
+                        <div class="finance-field full">
+                            <label for="financeAmount">Amount (₱)</label>
+                            <input
+                                type="number"
+                                name="amount"
+                                id="financeAmount"
+                                min="0.01"
+                                step="0.01"
+                                placeholder="Enter amount"
+                                required
+                            >
+                        </div>
+
+                        <div class="finance-field full">
+                            <label for="financeNotes">Notes</label>
+                            <textarea
+                                name="notes"
+                                id="financeNotes"
+                                placeholder="Add notes about this transaction..."
+                            ></textarea>
+                        </div>
+
+                        <div class="finance-actions full">
+                            <button type="submit">＋ Add Transaction</button>
+                            <button type="button" class="finance-reset" id="resetFinance">↻ Clear Form</button>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- Transaction history card -->
+                <section class="card finance-history-card">
+                    <div class="finance-history-header">
+                        <div>
+                            <h2>Transaction history</h2>
+                            <p>Your recorded farm expenses and income.</p>
+                        </div>
+                        <span id="transactionCount" class="finance-count-badge">0 records</span>
+                    </div>
+
+                    <div id="financeList" class="finance-list"></div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <template id="tpl-category-chip">
+        <button type="button" class="finance-category">
+            <span data-field="icon"></span>
+            <span data-field="name"></span>
+        </button>
+    </template>
+
+    <template id="tpl-finance-item">
+        <div class="finance-item">
+            <div class="finance-item-main">
+                <div class="finance-item-header">
+                    <strong class="finance-item-title" data-field="category"></strong>
+                    <span class="finance-pill" data-field="type"></span>
+                </div>
+                <div class="finance-item-meta" data-field="meta"></div>
+            </div>
+            <div class="finance-item-side">
+                <strong class="finance-item-amount" data-field="amount"></strong>
+                <button type="button" class="finance-delete-btn" data-action="delete">Delete</button>
+            </div>
+        </div>
+    </template>
+
+    <template id="tpl-finance-empty">
+        <div class="finance-empty">
+            <p>No transactions found for the selected filter.</p>
+        </div>
+    </template>
+
+    <script src="../assets/js/core.js"></script>
+    <script src="../assets/js/layout.js"></script>
+    <script src="finance.js"></script>
+    <script src="../Chat/chat.js"></script>
+</body>
+</html>

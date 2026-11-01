@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Ani — Plots</title>
+    <link rel="stylesheet" href="../assets/css/base.css">
+    <link rel="stylesheet" href="../assets/css/layout.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <link rel="stylesheet" href="plots.css">
+    <link rel="stylesheet" href="../Chat/chat.css">
+</head>
+<body data-page="plots">
+    <div class="app">
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <main class="main">
+            <header class="page-header header-top-bar">
+                <div>
+                 <h1>Plots</h1>
+                    <p>Add new plots, edit existing ones, and manage what's currently planted.</p>
+                </div>
+
+                <div class="side-note header-user-wrap">
+                    <div id="sidebarUser" class="side-user" hidden></div>
+                    <a href="#" id="logoutBtn" class="logout-link">🚪 Logout</a>
+                </div>
+            </header>
+
+            <section class="card">
+                <h2>Plot Overview</h2>
+                <p>A quick visual of every plot</p>
+                <div id="plotOverview" class="plot-grid"></div>
+            </section>
+
+            <section class="card">
+                <h2>Add a New Plot</h2>
+
+                <form id="plotForm" class="form-row">
+                    <label>
+                        Plot Name
+                        <input name="name" required placeholder="e.g. Plot B1">
+                    </label>
+
+                    <label>
+                        Crop Type
+                        <input type="hidden" name="crop_type" value="Rice">
+                        <input value="Rice" readonly>
+                    </label>
+
+                    <label>
+                        Status
+                        <select name="status">
+                            <option>Available</option>
+                            <option>Occupied</option>
+                            <option>Maintenance</option>
+                        </select>
+                    </label>
+
+                    <button>＋ Add Plot</button>
+                </form>
+            </section>
+
+            <section class="card">
+                <h2>All Plots</h2>
+                <p>
+                    Change the name or status directly in the row, then click Save.
+                    Click Plants to view or update what's planted.
+                </p>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Plot Name</th>
+                                <th>Crop Type</th>
+                                <th>Status</th>
+                                <th>Current Planting</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="plotsBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Planting modal -->
+            <div id="plantModal" class="modal" hidden>
+                <div class="modal-box">
+                    <button type="button" class="close" id="plantClose" aria-label="Close">×</button>
+
+                    <h2>Planting — <span id="plantTitle"></span></h2>
+
+                    <form id="plantForm">
+                        <input type="hidden" name="plot_id">
+                        <input type="hidden" name="planting_id">
+
+                        <label>
+                            Crop / Plant Name
+                            <input type="hidden" name="crop_name" value="Rice">
+                            <input value="Rice" readonly>
+                        </label>
+
+                        <label>
+                            Variety
+                            <input name="variety" placeholder="e.g. IR64">
+                        </label>
+
+                        <div class="form-row">
+                            <label>
+                                Planted Date
+                                <input type="date" name="planted_date" required>
+                            </label>
+
+                            <label>
+                                Expected Harvest
+                                <input type="date" name="expected_harvest_date">
+                            </label>
+                        </div>
+
+                        <label>
+                            Notes
+                            <textarea name="notes" placeholder="Optional notes"></textarea>
+                        </label>
+
+                        <button>＋ Save Planting</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <template id="tpl-plot-card">
+        <div class="plot-card">
+            <strong data-field="name"></strong>
+            <small data-field="crop"></small>
+            <div>
+                <span class="badge" data-badge="crop"></span>
+                <span class="badge" data-badge="status"></span>
+            </div>
+        </div>
+    </template>
+
+    <template id="tpl-plot-row">
+        <tr>
+            <td><input class="cell-input" data-role="name"></td>
+            <td><input class="cell-input" value="Rice" readonly></td>
+            <td>
+                <select data-role="status">
+                    <option>Available</option>
+                    <option>Occupied</option>
+                    <option>Maintenance</option>
+                </select>
+            </td>
+            <td data-field="planting"></td>
+            <td class="actions">
+                <button type="button" class="small" data-action="save">💾 Save</button>
+                <button type="button" class="small" data-action="plant">🌱 Plants</button>
+                <button type="button" class="small danger" data-action="delete">Delete</button>
+            </td>
+        </tr>
+    </template>
+
+    <script src="../assets/js/core.js"></script>
+    <script src="../assets/js/layout.js"></script>
+    <script src="plots.js"></script>
+    <script src="../Chat/chat.js"></script>
+</body>
+</html>

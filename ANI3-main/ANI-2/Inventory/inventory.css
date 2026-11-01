@@ -1,0 +1,326 @@
+/* ==========================================================================
+   inventory.css
+   Seed & Harvest page: Clean white card theme, green accents,
+   side-by-side layout (Form on left, Table on right).
+   ========================================================================== */
+
+.page-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #728276;
+    margin-bottom: 4px;
+}
+
+/* ---------- Tabs Card ---------- */
+.inventory-tabs {
+    background: #ffffff;
+    border: 1px solid #e3ebe1;
+    border-radius: 14px;
+    padding: 12px 18px;
+    margin-bottom: 18px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.tab-group {
+    display: inline-flex;
+    gap: 6px;
+    padding: 4px;
+    background: #eef4ed;
+    border-radius: 10px;
+}
+
+.tab-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 36px;
+    padding: 0 18px;
+    border-radius: 8px;
+    background: transparent;
+    color: #55665a;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all .15s;
+}
+
+.tab-btn:hover {
+    background: rgba(27, 94, 53, 0.08);
+    color: #1b5e35;
+}
+
+.tab-btn.active,
+.tab-btn.active:hover {
+    background: #1b5e35;
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 2px 6px rgba(27, 94, 53, 0.22);
+}
+
+/* ---------- Two-Column Layout (Wider Form on Left, Table on Right) ---------- */
+.inventory-layout {
+    display: grid;
+    grid-template-columns: minmax(320px, 460px) minmax(0, 1fr);
+    gap: 18px;
+    align-items: start;
+}
+
+.inventory-tab[hidden] {
+    display: none;
+}
+
+/* ---------- Cards ---------- */
+.card {
+    background: #ffffff;
+    border: 1px solid #e3ebe1;
+    border-radius: 14px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.card h2 {
+    font-family: Georgia, serif;
+    font-size: 19px;
+    font-weight: 700;
+    color: #1a2e22;
+    margin: 0 0 4px;
+}
+
+.card > p {
+    font-size: 12px;
+    color: #647368;
+    margin: 0 0 16px;
+}
+
+/* ---------- Form (Left Column) ---------- */
+.form-card {
+    padding: 20px 22px;
+}
+
+.form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.form-grid label.full,
+.form-grid button.full {
+    grid-column: 1 / -1;
+}
+
+.form-row label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #55665a;
+}
+
+.form-row input,
+.form-row select {
+    width: 100%;
+    min-width: 0;
+    height: 38px;
+    border: 1px solid #d4ded3;
+    border-radius: 8px;
+    background: #ffffff;
+    padding: 0 12px;
+    font-size: 13px;
+    color: #1f3024;
+    outline: none;
+    transition: border-color .15s, box-shadow .15s;
+}
+
+.form-row input:focus,
+.form-row select:focus {
+    border-color: #2b7650;
+    box-shadow: 0 0 0 3px rgba(43, 118, 80, 0.12);
+}
+
+.submit-btn,
+.form-row .submit-btn {
+    width: 100%;
+    height: 38px;
+    margin-top: 4px;
+    border-radius: 8px;
+    background: #1b5e35;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: background .15s, box-shadow .15s;
+}
+
+.submit-btn:hover,
+.form-row .submit-btn:hover {
+    background: #123728;
+    box-shadow: 0 2px 8px rgba(18, 55, 40, .25);
+}
+
+/* ---------- Tables (Right Column) ---------- */
+.table-card {
+    padding: 20px 22px;
+}
+
+.table-wrap {
+    border: 1px solid #e4e9e2;
+    border-radius: 10px;
+    overflow-x: auto;
+    background: #ffffff;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: #f7f9f6;
+    color: #6b7a70;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 11px 14px;
+    border-bottom: 1px solid #e4e9e2;
+    text-align: left;
+    white-space: nowrap;
+}
+
+td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #eef2ec;
+    font-size: 13px;
+    color: #1c2b22;
+    vertical-align: middle;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+tbody tr:hover {
+    background: #fafcfa;
+}
+
+/* Quantity input inside Seed table */
+.cell-input.qty {
+    width: 90px;
+    height: 32px;
+    border: 1px solid #d4ded3;
+    border-radius: 6px;
+    background: #ffffff;
+    padding: 0 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1c2b22;
+    outline: none;
+    transition: border-color .15s, box-shadow .15s;
+}
+
+.cell-input.qty:focus {
+    border-color: #2b7650;
+    box-shadow: 0 0 0 2px rgba(43, 118, 80, 0.12);
+}
+
+/* Action buttons inside Table */
+td:last-child {
+    white-space: nowrap;
+}
+
+.small {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    padding: 0 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    border: none;
+    background: #e6f2ea;
+    color: #1b5e35;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+    margin-right: 4px;
+}
+
+.small:hover {
+    background: #d3e9db;
+}
+
+.small.danger {
+    background: #fdeeed;
+    color: #b34d38;
+}
+
+.small.danger:hover {
+    background: #fbd6d2;
+    color: #922b17;
+}
+
+/* Badges */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+.badge.rice {
+    background: #e2f4e8;
+    color: #1b6838;
+}
+
+.badge.done {
+    background: #e2f4e8;
+    color: #1b6838;
+}
+
+.badge.low {
+    background: #fdf0e7;
+    color: #a84e20;
+}
+
+/* Empty state row */
+.empty-row td {
+    text-align: center;
+    color: #728276;
+    font-size: 13px;
+    font-style: italic;
+    padding: 32px 14px;
+}
+
+/* ---------- User Avatar in Header ---------- */
+.user-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #e6f2ea;
+    color: #1b5e35;
+    flex-shrink: 0;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 960px) {
+    .inventory-layout {
+        grid-template-columns: 1fr;
+    }
+}

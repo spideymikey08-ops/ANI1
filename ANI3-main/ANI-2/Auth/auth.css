@@ -1,0 +1,298 @@
+/* Aniya authentication pages: warm cream, forest green, soft hills and crops. */
+.auth-page {
+    --auth-cream: #fff9f2;
+    --auth-green: #175c2b;
+    --auth-text: #111;
+    margin: 0;
+    min-height: 100vh;
+    background: var(--auth-cream);
+    color: var(--auth-text);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+}
+
+.auth-scene {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    box-sizing: border-box;
+    isolation: isolate;
+    overflow: hidden;
+    padding: 38px 20px;
+}
+
+/* Decorative crop illustration on the left side. */
+.auth-scene::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    left: clamp(-45px, 1vw, 18px);
+    bottom: -35px;
+    width: clamp(150px, 25vw, 390px);
+    height: clamp(190px, 28vw, 390px);
+    background: url("/aniADMINupdated/aniADMIN/assets/images/flower-pot.png") left bottom / contain no-repeat;
+    pointer-events: none;
+    opacity: .92;
+}
+
+/* Soft landscape across the bottom, matching the reference design. */
+.auth-scene::before {
+    content: "";
+    position: absolute;
+    z-index: -2;
+    left: 0;
+    right: 0;
+    bottom: -25px;
+    height: clamp(100px, 16vw, 190px);
+    background: url("/aniADMINupdated/aniADMIN/assets/images/ground.png") center bottom / 100% 100% no-repeat;
+    pointer-events: none;
+}
+
+.auth-panel {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 580px);
+    box-sizing: border-box;
+    padding: 25px 36px 26px;
+    border: 1.3px solid #171717;
+    border-radius: 42px;
+    background: rgba(255, 249, 242, .72);
+}
+
+.auth-panel h1 {
+    margin: 0 0 24px;
+    color: var(--auth-green);
+    text-align: center;
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: .2px;
+    line-height: 1.28;
+}
+
+.auth-panel form {
+    display: flex;
+    flex-direction: column;
+}
+
+.auth-panel label:not(.visually-hidden) {
+    margin: 0 0 7px 2px;
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.auth-panel input {
+    display: block;
+    width: 100%;
+    height: 50px;
+    margin: 0 0 16px;
+    padding: 0 15px;
+    box-sizing: border-box;
+    border: 1px solid #b9c8c2;
+    border-radius: 12px;
+    outline: none;
+    background: #fff;
+    color: #222;
+    font: inherit;
+    font-size: 16px;
+}
+
+.auth-panel input::placeholder {
+    color: #a5a19e;
+    opacity: 1;
+}
+
+.auth-panel input:focus {
+    border-color: var(--auth-green);
+    box-shadow: 0 0 0 2px rgba(23, 92, 43, .12);
+}
+
+.auth-panel button {
+    display: block;
+    width: 100%;
+    align-self: stretch;
+    min-width: 0;
+    min-height: 52px;
+    margin-top: 12px;
+    padding: 10px 20px;
+    border: 0;
+    border-radius: 12px;
+    background: #00aa47;
+    color: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: .2px;
+    cursor: pointer;
+    transition: background .2s ease, transform .2s ease;
+}
+
+.auth-panel button:hover {
+    background: #0d942f;
+    transform: translateY(-1px);
+}
+
+.auth-switch {
+    margin: 18px 0 0;
+    text-align: center;
+    color: #111;
+    font-size: 16px;
+}
+
+.auth-switch a {
+    color: var(--auth-green);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.auth-switch a:hover {
+    text-decoration: underline;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Registration is taller because it contains more fields. */
+.register-title {
+    text-decoration: none;
+    color: #185c2b;
+    cursor: pointer;
+}
+
+.register-panel {
+    width: min(100%, 580px);
+    padding: 25px 36px 26px;
+}
+
+.register-panel h1 {
+    max-width: 220px;
+    margin: 0 auto 8px;
+    font-size: 36px;
+    line-height: 1.32;
+}
+
+.register-panel label:not(.visually-hidden) {
+    margin-bottom: 7px;
+    font-size: 17px;
+}
+
+.register-panel input {
+    height: 50px;
+    margin-bottom: 14px;
+    font-size: 16px;
+}
+
+.register-panel button {
+    width: 100%;
+    min-width: 0;
+    margin-top: 12px;
+    font-size: 18px;
+}
+
+.register-panel .auth-switch {
+    margin-top: 11px;
+}
+
+.login-panel h1 .login-title-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.login-panel h1 .login-title-link:focus-visible {
+    outline: 2px solid var(--auth-green);
+    outline-offset: 4px;
+    border-radius: 3px;
+}
+
+.login-panel {
+    width: min(100%, 580px);
+}
+
+.login-panel h1 {
+    margin-bottom: 28px;
+}
+
+.login-panel input {
+    height: 50px;
+    margin-bottom: 16px;
+}
+
+.login-panel button {
+    width: 100%;
+    margin-top: 12px;
+}
+
+.login-scene {
+    padding-top: 55px;
+    padding-bottom: 55px;
+}
+
+@media (max-width: 600px) {
+    .auth-scene {
+        padding: 65px 15px 35px;
+        align-items: center;
+    }
+
+    .auth-panel,
+    .register-panel {
+        padding: 23px 22px;
+        border-radius: 30px;
+    }
+
+    .auth-panel h1,
+    .register-panel h1 {
+        font-size: 30px;
+    }
+
+   .auth-panel label:not(.visually-hidden),
+    .register-panel label:not(.visually-hidden) {
+        font-size: 17px;
+    }
+
+    .auth-panel input,
+    .register-panel input {
+        height: 45px;
+        padding: 0 13px;
+        font-size: 15px;
+        border-radius: 11px;
+    }
+
+    .auth-panel button,
+    .register-panel button {
+        width: 100%;
+        min-width: 0;
+        min-height: 46px;
+        margin-top: 10px;
+        font-size: 16px;
+    }
+
+    .auth-switch {
+        font-size: 14px;
+    }
+
+    .auth-scene::after {
+        width: 145px;
+        height: 190px;
+        opacity: .45;
+    }
+
+    .auth-scene::before {
+        height: 105px;
+    }
+
+    .back-home {
+        top: 15px;
+        left: 17px;
+        font-size: 13px;
+    }
+}

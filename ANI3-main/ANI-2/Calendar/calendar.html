@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Ani — Calendar</title>
+    <link rel="stylesheet" href="../assets/css/base.css">
+    <link rel="stylesheet" href="../assets/css/layout.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <link rel="stylesheet" href="calendar.css">
+    <link rel="stylesheet" href="../Chat/chat.css">
+</head>
+<body data-page="calendar">
+    <div class="app">
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <main class="main">
+            <header class="page-header header-top-bar">
+                <div>
+                    <h1>Calendar</h1>
+                    <p>View scheduled farm tasks, expected harvests, and completed harvests.</p>
+                </div>
+
+                <div class="side-note header-user-wrap">
+                    <div id="sidebarUser" class="side-user" hidden></div>
+                    <a href="#" id="logoutBtn" class="logout-link">🚪 Logout</a>
+                </div>
+            </header>
+
+            <section class="card calendar-card">
+                <div class="calendar-toolbar">
+                    <button type="button" class="today-btn" id="todayBtn">Today</button>
+
+                    <div class="month-nav">
+                        <button type="button" id="prevMonth" aria-label="Previous month">‹</button>
+                        <h2 id="monthTitle"></h2>
+                        <button type="button" id="nextMonth" aria-label="Next month">›</button>
+                    </div>
+                </div>
+
+                <div id="calNotice" class="error-box" hidden></div>
+
+                <p class="calendar-help">Click a date to view the tasks scheduled for that day.</p>
+
+                <div class="calendar-grid" id="calendar">
+                    <div class="weekday">SUN</div>
+                    <div class="weekday">MON</div>
+                    <div class="weekday">TUE</div>
+                    <div class="weekday">WED</div>
+                    <div class="weekday">THU</div>
+                    <div class="weekday">FRI</div>
+                    <div class="weekday">SAT</div>
+                </div>
+
+                <div class="legend">
+                    <span><i class="dot watering-dot"></i> Farm task (type shown)</span>
+                    <span><i class="dot expected-dot"></i> Expected harvest</span>
+                    <span><i class="dot harvest-dot"></i> Completed harvest</span>
+                </div>
+            </section>
+
+            <section class="card day-tasks-card" id="dayTasksCard">
+                <div class="day-tasks-header">
+                    <div>
+                        <h2 id="selectedDateTitle">Tasks for today</h2>
+                        <p id="selectedDateSubtitle">Select a date on the calendar to view its checklist.</p>
+                    </div>
+
+                    <span class="task-count" id="taskCount">0 tasks</span>
+                </div>
+
+                <div class="checklist" id="checklist" hidden></div>
+
+                <div class="empty checklist-empty" id="checklistEmpty" hidden>
+                    <span class="empty-icon">✓</span>
+                    <div>
+                        <strong>Nothing to check off.</strong>
+                        <span>Add a farm task from the Tasks page.</span>
+                    </div>
+                </div>
+
+                <div class="day-events-summary" id="otherEvents" hidden>
+                    <h3>Other scheduled events</h3>
+                    <div id="otherEventsList"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <template id="tpl-day">
+        <button type="button" class="day">
+            <span class="day-number"><b data-field="today-number"></b></span>
+            <span class="day-events"></span>
+        </button>
+    </template>
+
+    <template id="tpl-day-event">
+        <span class="event" data-field="title"></span>
+    </template>
+
+    <template id="tpl-checklist-item">
+        <label class="checklist-item">
+            <input type="checkbox" data-action="toggle">
+            <span class="checkmark"></span>
+            <span class="checklist-main">
+                <strong data-field="title"></strong>
+                <small data-field="crop"></small>
+            </span>
+            <span class="checklist-status" data-field="status"></span>
+        </label>
+    </template>
+
+    <template id="tpl-scheduled-event">
+        <div class="scheduled-event">
+            <span data-field="title"></span>
+            <small data-field="kind"></small>
+        </div>
+    </template>
+
+    <script src="../assets/js/core.js"></script>
+    <script src="../assets/js/layout.js"></script>
+    <script src="calendar.js"></script>
+    <script src="../Chat/chat.js"></script>
+</body>
+</html>

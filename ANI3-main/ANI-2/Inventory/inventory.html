@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Ani — Seed & Harvest</title>
+    <link rel="stylesheet" href="../assets/css/base.css">
+    <link rel="stylesheet" href="../assets/css/layout.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <link rel="stylesheet" href="../assets/css/theme.css">
+    <link rel="stylesheet" href="inventory.css">
+    <link rel="stylesheet" href="../Chat/chat.css">
+</head>
+<body data-page="inventory">
+    <div class="app">
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <main class="main">
+            <header class="page-header header-top-bar">
+                <div>
+                    <h1>Seed & Harvest</h1>
+                    <p>Manage your seed inventory and record harvests in one place.</p>
+                </div>
+
+                <div class="side-note header-user-wrap">
+                    <div id="sidebarUser" class="side-user" hidden></div>
+                    <a href="#" id="logoutBtn" class="logout-link">🚪 Logout</a>
+                </div>
+            </header>
+
+            <div class="card inventory-tabs">
+                <div class="tab-group">
+                    <button type="button" class="tab-btn active" data-tab="seeds">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/></svg>
+                        Seed Inventory
+                    </button>
+                    <button type="button" class="tab-btn" data-tab="harvest">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 11-1 9"/><path d="m19 11-4-7"/><path d="M2 11h20"/><path d="m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6l1.7-7.4"/><path d="M4.5 15.5h15"/><path d="m5 11 4-7"/><path d="m9 11 1 9"/></svg>
+                        Harvest Records
+                    </button>
+                </div>
+            </div>
+
+            <!-- Seeds tab: Form on left, Table on right -->
+            <div id="seedTab" class="inventory-tab inventory-layout">
+                <!-- Left: Add a Seed Entry -->
+                <section class="card form-card">
+                    <h2>Add a Seed Entry</h2>
+                    <p>Register a new rice seed variety in your stock.</p>
+
+                    <form id="seedForm" class="form-row form-grid">
+                        <label class="full">
+                            Seed Name
+                            <input name="seed_name" placeholder="e.g. IR64 Rice Seeds" required>
+                        </label>
+
+                        <label>
+                            Crop Type
+                            <select name="crop_type">
+                                <option value="Rice" selected>Rice</option>
+                            </select>
+                        </label>
+
+                        <label>
+                            Quantity (g)
+                            <input type="number" min="0" step="0.01" name="quantity_g" placeholder="e.g. 300" required>
+                        </label>
+
+                        <label class="full">
+                            Low-Stock Threshold (g)
+                            <input type="number" min="0" step="0.01" name="threshold_g" placeholder="e.g. 100" required>
+                        </label>
+
+                        <button type="submit" class="submit-btn full">+ Add Seed</button>
+                    </form>
+                </section>
+
+                <!-- Right: Current Seed Inventory -->
+                <section class="card table-card">
+                    <h2>Current Seed Inventory</h2>
+                    <p>Update the quantity after distributing or restocking, then click Save.</p>
+
+                    <div class="table-wrap">
+                        <table class="seed-table">
+                            <thead>
+                                <tr>
+                                    <th>Seed Name</th>
+                                    <th>Crop Type</th>
+                                    <th>Quantity (g)</th>
+                                    <th>Threshold (g)</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="seedBody"></tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Harvest tab: Form on left, Table on right -->
+            <div id="harvestTab" class="inventory-tab inventory-layout" hidden>
+                <!-- Left: Log a Harvest -->
+                <section class="card form-card">
+                    <h2>Log a Harvest</h2>
+                    <p>Record yield and quantity harvested from a plot.</p>
+
+                    <form id="harvestForm" class="form-row form-grid">
+                        <label>
+                            Plot
+                            <select name="plot_id" id="harvestPlot" required></select>
+                        </label>
+
+                        <label>
+                            Date
+                            <input type="date" name="harvest_date" required>
+                        </label>
+
+                        <label>
+                            Quantity (kg)
+                            <input type="number" name="quantity" min="0.01" step="0.01" placeholder="e.g. 12.5" required>
+                        </label>
+
+                        <label>
+                            Notes (optional)
+                            <input name="notes" placeholder="e.g. Good grain quality">
+                        </label>
+
+                        <button type="submit" class="submit-btn full">+ Log Harvest</button>
+                    </form>
+                </section>
+
+                <!-- Right: Harvest History -->
+                <section class="card table-card">
+                    <h2>Harvest History</h2>
+                    <p>Your recorded rice harvest logs and yields.</p>
+
+                    <div class="table-wrap">
+                        <table class="harvest-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Plot</th>
+                                    <th>Crop</th>
+                                    <th>Quantity</th>
+                                    <th>Notes</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="harvestBody"></tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <template id="tpl-seed-row">
+        <tr>
+            <td data-field="name"></td>
+            <td><span class="badge" data-badge="crop"></span></td>
+            <td><input class="cell-input qty" type="number" min="0" step="0.01"></td>
+            <td data-field="threshold"></td>
+            <td><span class="badge" data-badge="stock"></span></td>
+            <td>
+                <button type="button" class="small" data-action="save">Save</button>
+                <button type="button" class="small danger" data-action="delete">Delete</button>
+            </td>
+        </tr>
+    </template>
+
+    <template id="tpl-harvest-row">
+        <tr>
+            <td data-field="date"></td>
+            <td data-field="plot"></td>
+            <td><span class="badge" data-badge="crop"></span></td>
+            <td data-field="quantity"></td>
+            <td data-field="notes"></td>
+            <td>
+                <button type="button" class="small danger" data-action="delete">Delete</button>
+            </td>
+        </tr>
+    </template>
+
+    <script src="../assets/js/core.js"></script>
+    <script src="../assets/js/layout.js"></script>
+    <script src="seeds.js"></script>
+    <script src="harvest.js"></script>
+    <script src="inventory.js"></script>
+    <script src="../Chat/chat.js"></script>
+</body>
+</html>

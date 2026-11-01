@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Ani — Watering Tasks</title>
+    <link rel="stylesheet" href="../assets/css/base.css">
+    <link rel="stylesheet" href="../assets/css/layout.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <link rel="stylesheet" href="watering.css">
+    <link rel="stylesheet" href="../Chat/chat.css">
+</head>
+<body data-page="watering">
+    <div class="app">
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <main class="main">
+            <header class="page-header header-top-bar">
+                <div>
+                    <h1>Tasks</h1>
+                <p>Schedule farm activities by plot and check them off as they're done.</p>
+                </div>
+
+                <div class="side-note header-user-wrap">
+                    <div id="sidebarUser" class="side-user" hidden></div>
+                    <a href="#" id="logoutBtn" class="logout-link">🚪 Logout</a>
+                </div>
+            </header>
+
+            <section class="card">
+                <h2>Add a Task</h2>
+
+                <form id="taskForm" class="form-row">
+                    <label>
+                        Plot
+                        <select name="plot_id" id="taskPlot" required></select>
+                    </label>
+
+                    <label>
+                        Date
+                        <input type="date" name="task_date" required>
+                    </label>
+
+                    <label>
+                        Task Type
+                        <select name="task_type" id="taskType" required>
+                            <option value="Water">Water</option>
+                            <option value="Fertilize">Fertilize</option>
+                            <option value="Weed">Weed</option>
+                            <option value="Pest Control">Pest Control</option>
+                            <option value="Inspect">Inspect</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </label>
+
+                    <button type="submit">＋ Add Task</button>
+                </form>
+            </section>
+
+            <section class="card">
+                <h2>All Tasks</h2>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Done</th>
+                                <th>Plot</th>
+                                <th>Crop</th>
+                                <th>Task Type</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="taskBody"></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <template id="tpl-task-row">
+        <tr>
+            <td><input type="checkbox" data-action="toggle"></td>
+            <td data-field="plot"></td>
+            <td><span class="badge" data-badge="crop"></span></td>
+            <td><span class="badge task-type-badge" data-field="task_type"></span></td>
+            <td data-field="date"></td>
+            <td>
+                <button type="button" class="small danger" data-action="delete">Delete</button>
+            </td>
+        </tr>
+    </template>
+
+    <script src="../assets/js/core.js"></script>
+    <script src="../assets/js/layout.js"></script>
+    <script src="watering.js"></script>
+    <script src="../Chat/chat.js"></script>
+</body>
+</html>

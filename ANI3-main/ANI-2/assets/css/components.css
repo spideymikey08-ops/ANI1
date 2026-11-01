@@ -1,0 +1,246 @@
+/* ==========================================================================
+   components.css
+   Reusable pieces: cards, badges, forms, buttons, tables, toast, plot cards.
+   ========================================================================== */
+
+.card { 
+    background: #fff;
+    border: 1px solid #e3dac5;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .02);
+}
+
+.card h2 {
+    font: 700 19px Georgia, serif;
+    margin: 0 0 14px;
+    color: #123728;
+}
+
+.card > p {
+    color: #6e655b;
+    margin: 0 0 18px;
+}
+
+.plot-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(260px, 1fr));
+    gap: 12px;
+}
+
+.plot-card {
+    border: 2px solid #218c4d;
+    border-radius: 9px;
+    padding: 14px 18px;
+    background: #fff;
+}
+
+.plot-card strong {
+    display: block;
+    font-size: 15px;
+    margin-bottom: 4px;
+}
+
+.plot-card small {
+    display: block;
+    color: #70685f;
+    margin-bottom: 9px;
+}
+
+.badge {
+    display: inline-block;
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-right: 4px;
+    background: #edf0e9;
+}
+
+.badge.rice {
+    background: #e3efd8;
+    color: #4f7b32;
+}
+
+.badge.occupied,
+.badge.done {
+    background: #d9f2e2;
+    color: #16804a;
+}
+
+.badge.available {
+    background: #eaf2e8;
+    color: #3f784d;
+}
+
+.badge.maintenance {
+    background: #f2dfdf;
+    color: #9c3c3c;
+}
+
+.badge.pending,
+.badge.low {
+    background: #ffebc7;
+    color: #ad6a00;
+}
+
+.list-row {
+    padding: 12px 0;
+    border-bottom: 1px solid #e7deca;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.list-row:last-child {
+    border-bottom: 0;
+}
+
+.empty {
+    color: #7a736b;
+    padding: 15px 0;
+}
+
+.form-row {
+    display: flex;
+    gap: 10px;
+    align-items: end;
+    flex-wrap: wrap;
+}
+
+.form-row label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    color: #6b6258;
+    font-size: 13px;
+}
+
+.form-row input,
+.form-row select {
+    height: 35px;
+    border: 1px solid #e2d8c4;
+    border-radius: 7px;
+    background: #fff;
+    padding: 7px 11px;
+    color: #1a241e;
+    min-width: 120px;
+}
+
+.form-row label:first-child input {
+    min-width: 190px;
+}
+
+.form-row button,
+button {
+    height: 36px;
+    border: 0;
+    border-radius: 7px;
+    background: #173d23;
+    color: #fff;
+    font-weight: 700;
+    padding: 0 14px;
+    cursor: pointer;
+}
+
+.form-row button:hover,
+button:hover {
+    background: #245c35;
+}
+
+.table-wrap {
+    overflow: auto;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 800px;
+}
+
+th {
+    background: #f8f3e8;
+    text-align: left;
+    color: #615b53;
+    font-size: 11px;
+    letter-spacing: .3px;
+    padding: 13px 18px;
+    border-bottom: 1px solid #dfd5bf;
+}
+
+td {
+    padding: 12px 18px;
+    border-bottom: 1px solid #e4dac5;
+    vertical-align: middle;
+}
+
+.cell-input,
+td select {
+    height: 30px;
+    border: 1px solid #e2d8c4;
+    border-radius: 6px;
+    padding: 5px 8px;
+    background: #fff;
+}
+
+.actions {
+    white-space: nowrap;
+}
+
+.small {
+    height: 28px;
+    padding: 0 9px;
+    font-size: 12px;
+    background: #e8f1e6;
+    color: #22613a;
+    margin-right: 5px;
+}
+
+.small.danger {
+    background: #f5e5e2;
+    color: #9c3e30;
+}
+
+.error-box {
+    padding: 12px 14px;
+    border-radius: 7px;
+    background: #fff0ed;
+    color: #b33a27;
+    margin-bottom: 15px;
+}
+
+.toast {
+    position: fixed;
+    right: 25px;
+    bottom: 25px;
+    background: #173d23;
+    color: #fff;
+    padding: 12px 18px;
+    border-radius: 8px;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: .2s;
+    pointer-events: none;
+    z-index: 20;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: none;
+}
+
+.toast.error {
+    background: #a53d2e;
+}
+
+@media (max-width: 900px) {
+    .plot-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-row {
+        align-items: stretch;
+    }
+}
