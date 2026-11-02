@@ -123,45 +123,21 @@ async function loadOverviewData() {
         const d = await api('Admin/get_admin_data.php');
         const ov = d.overview;
 
-        // Stats
-        document.getElementById('statUsers').textContent = ov.users.total_users || 0;
-        document.getElementById('statUsersSub').textContent =
-            `${ov.users.active_users || 0} Active · ${ov.users.deactivated_users || 0} Deactivated · ${ov.users.admin_users || 0} Admin`;
+        document.getElementById('statUsers').textContent =
+            ov.users.total_users ?? 0;
 
-        document.getElementById('statPlots').textContent = ov.plots.total_plots || 0;
-        document.getElementById('statPlotsSub').textContent =
-            `${ov.plots.occupied_plots || 0} Occupied · ${ov.plots.available_plots || 0} Available`;
+        document.getElementById('statPlots').textContent =
+            ov.plots.total_plots ?? 0;
 
-        document.getElementById('statTasks').textContent = ov.tasks.pending_tasks || 0;
-        document.getElementById('statTasksSub').textContent =
-            `${ov.tasks.due_today || 0} Due Today · ${ov.tasks.completed_tasks || 0} Completed`;
+        document.getElementById('statActiveUsers').textContent =
+            ov.users.active_users ?? 0;
 
-        document.getElementById('statHarvest').textContent = `${Number(ov.harvests.total_kg || 0).toLocaleString()} kg`;
-        document.getElementById('statHarvestSub').textContent = `${ov.harvests.total_harvests || 0} Harvest logs`;
+        document.getElementById('statDeactivatedUsers').textContent =
+            ov.users.deactivated_users ?? 0;
 
-        document.getElementById('statNet').textContent = money(ov.finances.net);
-        document.getElementById('statNet').style.color = ov.finances.net >= 0 ? '#27ae60' : '#c0392b';
-        document.getElementById('statNetSub').textContent =
-            `+${money(ov.finances.income)} In · -${money(ov.finances.expenses)} Out`;
-
-        // Logs snippet
-        const logsContainer = document.getElementById('overviewLogs');
-        if (d.logs && d.logs.length) {
-            logsContainer.innerHTML = d.logs.slice(0, 10).map(l => `
-                <div class="log-item">
-                    <div>
-                        <span class="log-user">${escapeHtml(l.username)}</span>:
-                        <span class="log-action">${escapeHtml(l.action)}</span>
-                        <div style="font-size: 12px; color: #555;">${escapeHtml(l.details || '')}</div>
-                    </div>
-                    <span class="log-time">${l.created_at.slice(5, 16)}</span>
-                </div>
-            `).join('');
-        } else {
-            logsContainer.innerHTML = '<p style="padding: 10px; color: #777;">No activity logs recorded yet.</p>';
-        }
     } catch (e) {
-        toast(e.message, true);
+        console.error('Admin dashboard error:', e);
+        toast('Failed to load dashboard: ' + e.message, true);
     }
 }
 

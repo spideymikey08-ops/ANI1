@@ -12,7 +12,7 @@ if (!$id) {
 }
 
 $s = $pdo->prepare(
-    'UPDATE watering_tasks SET done=? WHERE id=?'
+    'UPDATE watering_tasks SET done = ? WHERE id = ?'
 );
 
 $s->execute([

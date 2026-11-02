@@ -10,14 +10,13 @@ $qty = (float)($d['quantity'] ?? 0);
 $notes = trim((string)($d['notes'] ?? ''));
 
 if (!$plot || $qty <= 0) {
-    json_error(
-        'Select a plot and enter a quantity greater than zero.'
-    );
+    json_error('Select a plot and enter a valid quantity.');
 }
 
 $s = $pdo->prepare(
-    'INSERT INTO harvests(plot_id,harvest_date,quantity,notes)
-     VALUES(?,?,?,?)'
+    "INSERT INTO harvests
+        (plot_id, harvest_date, quantity, notes)
+     VALUES (?, ?, ?, ?)"
 );
 
 $s->execute([
@@ -28,5 +27,5 @@ $s->execute([
 ]);
 
 json_ok([
-    'message' => 'Harvest logged.'
+    'message' => 'Harvest logged successfully.'
 ]);
