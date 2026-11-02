@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Ani — Inventory</title>
+    <link rel="stylesheet" href="../assets/css/base.css">
+    <link rel="stylesheet" href="../assets/css/layout.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <link rel="stylesheet" href="../assets/css/theme.css">
+    <link rel="stylesheet" href="inventory.css">
+    <link rel="stylesheet" href="../Chat/chat.css">
+</head>
+<body data-page="inventory">
+    <div class="app">
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <main class="main">
+            <header class="page-header header-top-bar">
+                <div>
+                    <h1>Farm Inventory</h1>
+                    <p>Track purchased farm supplies, seed stocks, materials, and harvest records.</p>
+                </div>
+
+                <div class="side-note header-user-wrap">
+                    <div id="sidebarUser" class="side-user" hidden></div>
+                    <a href="#" id="logoutBtn" class="logout-link">🚪 Logout</a>
+                </div>
+            </header>
+
+            <div class="card inventory-tabs">
+                <div class="tab-group">
+                    <button type="button" class="tab-btn active" data-tab="supplies">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+                        Farm Supplies &amp; Materials
+                    </button>
+                    <button type="button" class="tab-btn" data-tab="harvest">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 11-1 9"/><path d="m19 11-4-7"/><path d="M2 11h20"/><path d="m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6l1.7-7.4"/><path d="M4.5 15.5h15"/><path d="m5 11 4-7"/><path d="m9 11 1 9"/></svg>
+                        Harvest Records
+                    </button>
+                    <button type="button" class="tab-btn" data-tab="usage">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                        Usage History
+                    </button>
+                    <button type="button" class="tab-btn" data-tab="seeds">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/></svg>
+                        Seed Varieties
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab 1: Farm Supplies & Materials (Seeds, Fertilizers, Pesticides, Other Supplies) -->
+            <div id="suppliesTab" class="inventory-tab">
+                <!-- Supplies Summary Cards -->
+                <div class="supplies-summary-grid">
+                    <div class="supplies-stat-card">
+                        <span>Total Items</span>
+                        <b id="sumTotalItems">0</b>
+                    </div>
+                    <div class="supplies-stat-card border-rice">
+                        <span>Rice Seeds</span>
+                        <b id="sumSeeds">0</b>
+                    </div>
+                    <div class="supplies-stat-card border-fertilize">
+                        <span>Fertilizers</span>
+                        <b id="sumFertilizers">0</b>
+                    </div>
+                    <div class="supplies-stat-card border-pest">
+                        <span>Pesticides</span>
+                        <b id="sumPesticides">0</b>
+                    </div>
+                    <div class="supplies-stat-card border-other">
+                        <span>Other Supplies</span>
+                        <b id="sumOther">0</b>
+                    </div>
+                </div>
+
+                <div class="inventory-layout">
+                    <!-- Left: Add Farm Supply Form -->
+                    <section class="card form-card">
+                        <h2>Add Farm Supply</h2>
+                        <p>Track purchased seeds, fertilizers, pesticides, and tools.</p>
+
+                        <form id="supplyForm" class="form-row form-grid">
+                            <label class="full">
+                                Item Name
+                                <input name="item_name" placeholder="e.g. Complete 14-14-14 Fertilizer" required>
+                            </label>
+
+                            <label>
+                                Category
+                                <select name="category" required>
+                                    <option value="Rice Seeds">Rice Seeds</option>
+                                    <option value="Fertilizers" selected>Fertilizers</option>
+                                    <option value="Pesticides">Pesticides</option>
+                                    <option value="Other Supplies">Other Supplies</option>
+                                </select>
+                            </label>
+
+                            <div class="qty-unit-row">
+                                <label style="flex: 2;">
+                                    Quantity
+                                    <input type="number" min="0" step="0.01" name="quantity" placeholder="e.g. 50" required>
+                                </label>
+                                <label style="flex: 1.2;">
+                                    Unit
+                                    <select name="unit">
+                                        <option value="kg" selected>kg</option>
+                                        <option value="bags">bags</option>
+                                        <option value="liters">liters</option>
+                                        <option value="packs">packs</option>
+                                        <option value="bottles">bottles</option>
+                                        <option value="pcs">pcs</option>
+                                    </select>
+                                </label>
+                            </div>
+
+                            <label>
+                                Purchase Date
+                                <input type="date" name="purchase_date" required>
+                            </label>
+
+                            <label>
+                                Unit Cost (₱, optional)
+                                <input type="number" min="0" step="0.01" name="unit_cost" placeholder="e.g. 1850">
+                            </label>
+
+                            <label class="full">
+                                Supplier / Source (optional)
+                                <input name="supplier" placeholder="e.g. AgriSupply Co. / DA Subsidy">
+                            </label>
+
+                            <label class="full">
+                                Notes (optional)
+                                <textarea name="notes" placeholder="Storage location, instructions, etc."></textarea>
+                            </label>
+
+                            <button type="submit" class="submit-btn full">+ Add to Inventory</button>
+                        </form>
+                    </section>
+
+                    <!-- Right: Supplies Inventory Table -->
+                    <section class="card table-card">
+                        <div class="table-head-flex">
+                            <div>
+                                <h2>Supplies &amp; Materials Stock</h2>
+                                <p>Manage stock quantities and update when used in the field.</p>
+                            </div>
+                            <div class="category-pills" id="categoryFilters">
+                                <button type="button" class="cat-pill active" data-category="All">All</button>
+                                <button type="button" class="cat-pill" data-category="Rice Seeds">Seeds</button>
+                                <button type="button" class="cat-pill" data-category="Fertilizers">Fertilizers</button>
+                                <button type="button" class="cat-pill" data-category="Pesticides">Pesticides</button>
+                                <button type="button" class="cat-pill" data-category="Other Supplies">Other</button>
+                            </div>
+                        </div>
+
+                        <div class="table-wrap">
+                            <table class="inventory-table">
+                                <thead>
+                                    <tr>
+                                        <th>Item Name</th>
+                                        <th>Category</th>
+                                        <th>In Stock</th>
+                                        <th>Purchased</th>
+                                        <th>Cost / Source</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="supplyBody"></tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Tab 2: Harvest tab: Form on left, Table on right -->
+            <div id="harvestTab" class="inventory-tab inventory-layout" hidden>
+                <!-- Left: Log a Harvest -->
+                <section class="card form-card">
+                    <h2>Log a Harvest</h2>
+                    <p>Record yield and quantity harvested from a plot.</p>
+
+                    <form id="harvestForm" class="form-row form-grid">
+                        <label>
+                            Plot
+                            <select name="plot_id" id="harvestPlot" required></select>
+                        </label>
+
+                        <label>
+                            Date
+                            <input type="date" name="harvest_date" required>
+                        </label>
+
+                        <label>
+                            Quantity (kg)
+                            <input type="number" name="quantity" min="0.01" step="0.01" placeholder="e.g. 12.5" required>
+                        </label>
+
+                        <label>
+                            Notes (optional)
+                            <input name="notes" placeholder="e.g. Good grain quality">
+                        </label>
+
+                        <button type="submit" class="submit-btn full">+ Log Harvest</button>
+                    </form>
+                </section>
+
+                <!-- Right: Harvest History -->
+                <section class="card table-card">
+                    <h2>Harvest History</h2>
+                    <p>Your recorded rice harvest logs and yields. Click Edit to update records.</p>
+
+                    <div class="table-wrap">
+                        <table class="harvest-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Plot</th>
+                                    <th>Crop</th>
+                                    <th>Quantity</th>
+                                    <th>Notes</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="harvestBody"></tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Tab 3: Usage History Tab -->
+            <div id="usageTab" class="inventory-tab" hidden>
+                <section class="card table-card full-width-card">
+                    <h2>Supplies &amp; Materials Usage History</h2>
+                    <p>Audit trail of farm materials applied, distributed, or restocked.</p>
+
+                    <div class="table-wrap">
+                        <table class="usage-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Item</th>
+                                    <th>Action</th>
+                                    <th>Quantity</th>
+                                    <th>Assigned Plot</th>
+                                    <th>Notes / Purpose</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usageBody"></tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Tab 4: Seeds tab: Form on left, Table on right -->
+            <div id="seedTab" class="inventory-tab inventory-layout" hidden>
+                <!-- Left: Add a Seed Entry -->
+                <section class="card form-card">
+                    <h2>Add a Seed Variety</h2>
+                    <p>Register a new rice seed variety in your stock.</p>
+
+                    <form id="seedForm" class="form-row form-grid">
+                        <label class="full">
+                            Seed Name
+                            <input name="seed_name" placeholder="e.g. IR64 Rice Seeds" required>
+                        </label>
+
+                        <label>
+                            Crop Type
+                            <select name="crop_type">
+                                <option value="Rice" selected>Rice</option>
+                            </select>
+                        </label>
+
+                        <label>
+                            Quantity (g)
+                            <input type="number" min="0" step="0.01" name="quantity_g" placeholder="e.g. 300" required>
+                        </label>
+
+                        <label class="full">
+                            Low-Stock Threshold (g)
+                            <input type="number" min="0" step="0.01" name="threshold_g" placeholder="e.g. 100" required>
+                        </label>
+
+                        <button type="submit" class="submit-btn full">+ Add Seed</button>
+                    </form>
+                </section>
+
+                <!-- Right: Current Seed Inventory -->
+                <section class="card table-card">
+                    <h2>Current Seed Inventory</h2>
+                    <p>Update the quantity after distributing or restocking, then click Save.</p>
+
+                    <div class="table-wrap">
+                        <table class="seed-table">
+                            <thead>
+                                <tr>
+                                    <th>Seed Name</th>
+                                    <th>Crop Type</th>
+                                    <th>Quantity (g)</th>
+                                    <th>Threshold (g)</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="seedBody"></tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal: Use / Deduct Stock -->
+    <div id="modalUseStock" class="modal" hidden>
+        <div class="modal-box">
+            <button type="button" class="close" data-close aria-label="Close">×</button>
+            <h2>📉 Use Stock — <span id="useStockItemName"></span></h2>
+            <p class="modal-sub">Record materials applied to a plot or used across the farm. Available: <strong id="useStockAvailable"></strong></p>
+            <form id="formUseStock">
+                <input type="hidden" id="useStockId">
+                <div class="form-row">
+                    <label>
+                        Quantity Used (<span id="useStockUnit"></span>)
+                        <input type="number" id="useStockQty" min="0.01" step="0.01" placeholder="e.g. 10" required>
+                    </label>
+                    <label>
+                        Date Used
+                        <input type="date" id="useStockDate" required>
+                    </label>
+                </div>
+                <label>
+                    Assigned Plot / Area
+                    <select id="useStockPlot">
+                        <option value="">Whole Farm (Entire Farm)</option>
+                    </select>
+                </label>
+                <label>
+                    Purpose / Notes
+                    <input type="text" id="useStockNotes" placeholder="e.g. Basal fertilizer application for paddy">
+                </label>
+                <div class="modal-actions">
+                    <button type="submit" class="primary-btn">Record Stock Usage</button>
+                    <button type="button" class="btn-secondary" data-close>Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Restock -->
+    <div id="modalRestock" class="modal" hidden>
+        <div class="modal-box">
+            <button type="button" class="close" data-close aria-label="Close">×</button>
+            <h2>📈 Restock Item — <span id="restockItemName"></span></h2>
+            <p class="modal-sub">Add purchased or replenished quantity to stock.</p>
+            <form id="formRestock">
+                <input type="hidden" id="restockId">
+                <div class="form-row">
+                    <label>
+                        Quantity to Add (<span id="restockUnit"></span>)
+                        <input type="number" id="restockQty" min="0.01" step="0.01" placeholder="e.g. 25" required>
+                    </label>
+                    <label>
+                        Restock Date
+                        <input type="date" id="restockDate" required>
+                    </label>
+                </div>
+                <label>
+                    Notes (optional)
+                    <input type="text" id="restockNotes" placeholder="e.g. New delivery from cooperative">
+                </label>
+                <div class="modal-actions">
+                    <button type="submit" class="primary-btn">Add Stock</button>
+                    <button type="button" class="btn-secondary" data-close>Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Edit Supply -->
+    <div id="modalEditSupply" class="modal" hidden>
+        <div class="modal-box">
+            <button type="button" class="close" data-close aria-label="Close">×</button>
+            <h2>✏️ Edit Farm Supply</h2>
+            <p class="modal-sub">Update item details, category, or current quantity.</p>
+            <form id="formEditSupply">
+                <input type="hidden" id="editSupplyId">
+                <label>
+                    Item Name
+                    <input type="text" id="editSupplyName" required>
+                </label>
+                <div class="form-row">
+                    <label>
+                        Category
+                        <select id="editSupplyCategory" required>
+                            <option value="Rice Seeds">Rice Seeds</option>
+                            <option value="Fertilizers">Fertilizers</option>
+                            <option value="Pesticides">Pesticides</option>
+                            <option value="Other Supplies">Other Supplies</option>
+                        </select>
+                    </label>
+                    <label>
+                        Quantity
+                        <input type="number" id="editSupplyQuantity" min="0" step="0.01" required>
+                    </label>
+                </div>
+                <div class="form-row">
+                    <label>
+                        Unit
+                        <select id="editSupplyUnit">
+                            <option value="kg">kg</option>
+                            <option value="bags">bags</option>
+                            <option value="liters">liters</option>
+                            <option value="packs">packs</option>
+                            <option value="bottles">bottles</option>
+                            <option value="pcs">pcs</option>
+                        </select>
+                    </label>
+                    <label>
+                        Purchase Date
+                        <input type="date" id="editSupplyDate" required>
+                    </label>
+                </div>
+                <div class="form-row">
+                    <label>
+                        Unit Cost (₱)
+                        <input type="number" id="editSupplyCost" min="0" step="0.01">
+                    </label>
+                    <label>
+                        Supplier
+                        <input type="text" id="editSupplySupplier">
+                    </label>
+                </div>
+                <label>
+                    Notes
+                    <textarea id="editSupplyNotes"></textarea>
+                </label>
+                <div class="modal-actions">
+                    <button type="submit" class="primary-btn">Save Changes</button>
+                    <button type="button" class="btn-secondary" data-close>Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Edit Harvest Record (Requirement 4) -->
+    <div id="modalEditHarvest" class="modal" hidden>
+        <div class="modal-box">
+            <button type="button" class="close" data-close aria-label="Close">×</button>
+            <h2>✏️ Edit Harvest Record</h2>
+            <p class="modal-sub">Update harvested yield, date, or plot details.</p>
+            <form id="formEditHarvest">
+                <input type="hidden" id="editHarvestId">
+                <label>
+                    Rice Plot
+                    <select id="editHarvestPlot" required></select>
+                </label>
+                <div class="form-row">
+                    <label>
+                        Harvest Date
+                        <input type="date" id="editHarvestDate" required>
+                    </label>
+                    <label>
+                        Quantity (kg)
+                        <input type="number" id="editHarvestQty" min="0.01" step="0.01" required>
+                    </label>
+                </div>
+                <label>
+                    Notes
+                    <input type="text" id="editHarvestNotes" placeholder="e.g. Good grain quality">
+                </label>
+                <div class="modal-actions">
+                    <button type="submit" class="primary-btn">Update Harvest</button>
+                    <button type="button" class="btn-secondary" data-close>Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <template id="tpl-seed-row">
+        <tr>
+            <td data-field="name"></td>
+            <td><span class="badge" data-badge="crop"></span></td>
+            <td><input class="cell-input qty" type="number" min="0" step="0.01"></td>
+            <td data-field="threshold"></td>
+            <td><span class="badge" data-badge="stock"></span></td>
+            <td>
+                <button type="button" class="small" data-action="save">Save</button>
+                <button type="button" class="small danger" data-action="delete">Delete</button>
+            </td>
+        </tr>
+    </template>
+
+    <template id="tpl-harvest-row">
+        <tr>
+            <td data-field="date"></td>
+            <td data-field="plot"></td>
+            <td><span class="badge" data-badge="crop"></span></td>
+            <td data-field="quantity"></td>
+            <td data-field="notes"></td>
+            <td>
+                <button type="button" class="small" data-action="edit">Edit</button>
+                <button type="button" class="small danger" data-action="delete">Delete</button>
+            </td>
+        </tr>
+    </template>
+
+    <script src="../assets/js/core.js"></script>
+    <script src="../assets/js/layout.js"></script>
+    <script src="supplies.js"></script>
+    <script src="seeds.js"></script>
+    <script src="harvest.js"></script>
+    <script src="inventory.js"></script>
+    <script src="../Chat/chat.js"></script>
+</body>
+</html>

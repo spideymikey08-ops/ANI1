@@ -1,0 +1,49 @@
+/* Login + Register (needs core.js) */
+
+const loginForm = document.getElementById('loginForm');
+const registerForm = document.getElementById('registerForm');
+
+if (loginForm) {
+    loginForm.addEventListener('submit', async e => {
+        e.preventDefault();
+
+        try {
+            const r = await post('Auth/login.php', {
+                username: document.getElementById('username').value.trim(),
+                password: document.getElementById('password').value
+            });
+
+            localStorage.setItem('ani_user', r.full_name || r.username || '');
+            localStorage.setItem('ani_username', r.username || '');
+            localStorage.setItem('ani_role', r.role || 'user');
+
+            if (r.role === 'admin') {
+                window.location.href = urlFor('Admin/index.html');
+            } else {
+                window.location.href = urlFor('Dashboard/index.html');
+            }
+        } catch (err) {
+            toast(err.message, true);
+        }
+    });
+}
+
+if (registerForm) {
+    registerForm.addEventListener('submit', async e => {
+        e.preventDefault();
+
+        try {
+            await post('Auth/register.php', {
+                full_name: document.getElementById('full_name').value.trim(),
+                username: document.getElementById('username').value.trim(),
+                phone: document.getElementById('phone').value.trim(),
+                password: document.getElementById('password').value
+            });
+
+            toast('Account created! Redirecting to login...');
+            setTimeout(() => { window.location.href = 'login.html'; }, 1200);
+        } catch (err) {
+            toast(err.message, true);
+        }
+    });
+}

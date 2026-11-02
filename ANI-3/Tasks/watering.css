@@ -1,0 +1,13 @@
+/* Tasks page: completed rows are dimmed. */
+.muted {
+    opacity: .6;
+}
+
+.task-type-badge {
+    white-space: nowrap;
+}
+
+#taskForm select,
+#taskForm input[type="date"] {
+    min-width: 150px;
+}

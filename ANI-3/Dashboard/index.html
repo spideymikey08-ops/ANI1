@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Ani — Dashboard</title>
+    <link rel="stylesheet" href="../assets/css/base.css">
+    <link rel="stylesheet" href="../assets/css/layout.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="../Chat/chat.css">
+</head>
+
+<body data-page="dashboard">
+    <div class="app">
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <main class="main">
+            <header class="page-header header-top-bar">
+                <div>
+                    <h1>Dashboard</h1>
+                    <p>Here's what's happening across the rice plots today.</p>
+                </div>
+
+                <div class="side-note header-user-wrap">
+                    <div id="sidebarUser" class="side-user" hidden></div>
+                    <a href="#" id="logoutBtn" class="logout-link">🚪 Logout</a>
+                </div>
+            </header>
+
+            <div id="dashError" class="error-box" hidden></div>
+
+            <!-- Stats Overview -->
+            <div class="stats">
+                <div class="stat stat-green">
+                    <span>Rice plots</span>
+                    <b id="statRice">–</b>
+                </div>
+
+                <div class="stat stat-blue">
+                    <span>Tasks due today</span>
+                    <b id="statTasks">–</b>
+                </div>
+
+                <div class="stat stat-gold">
+                    <span>Harvests this week</span>
+                    <b id="statHarvests">–</b>
+                </div>
+            </div>
+
+            <!-- Quick Action Buttons -->
+            <section class="card dash-quick-actions">
+                <div class="quick-actions-header">
+                    <h2>Quick Actions</h2>
+                    <p>Quickly log farm activities and tick off completed tasks</p>
+                </div>
+                <div class="quick-actions-grid">
+                    <button type="button" class="btn-action btn-action-harvest" id="btnQuickHarvest">
+                        <span class="action-icon">🌾</span>
+                        <div class="action-text">
+                            <strong>Log Harvest</strong>
+                            <small>Record crop yield &amp; output</small>
+                        </div>
+                    </button>
+
+                    <button type="button" class="btn-action btn-action-expense" id="btnQuickExpense">
+                        <span class="action-icon">💸</span>
+                        <div class="action-text">
+                            <strong>Add Expense</strong>
+                            <small>Record plot or farm costs</small>
+                        </div>
+                    </button>
+
+                    <button type="button" class="btn-action btn-action-sale" id="btnQuickSale">
+                        <span class="action-icon">💰</span>
+                        <div class="action-text">
+                            <strong>Add Sale</strong>
+                            <small>Record income from sales</small>
+                        </div>
+                    </button>
+
+                    <button type="button" class="btn-action btn-action-tick" id="btnQuickTickTask">
+                        <span class="action-icon">✅</span>
+                        <div class="action-text">
+                            <strong>Tick Task</strong>
+                            <small>Mark task as completed</small>
+                        </div>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Dashboard Main Grid -->
+            <div class="dash-grid">
+                <section class="card dash-plots">
+                    <h2>Plot Overview</h2>
+                    <div class="plot-grid" id="plotGrid"></div>
+                </section>
+
+                <section class="card dash-tasks" id="tasksCard">
+                    <div class="card-head-row">
+                        <h2>Today's Tasks</h2>
+                        <span class="task-legend">Watering · Fertilizing · Weeding</span>
+                    </div>
+                    <div id="taskList"></div>
+                </section>
+
+                <section class="card dash-harvest">
+                    <h2>Recent Harvests</h2>
+                    <div id="harvestList"></div>
+                </section>
+
+                <section class="card dash-seeds">
+                    <h2>Seed Inventory</h2>
+                    <div id="seedList"></div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Quick Modal: Log Harvest -->
+    <div id="modalQuickHarvest" class="modal" hidden>
+        <div class="modal-box">
+            <button type="button" class="close" data-close aria-label="Close">×</button>
+            <h2>🌾 Quick Log Harvest</h2>
+            <p class="modal-sub">Record harvested yield from a plot.</p>
+            <form id="formQuickHarvest">
+                <label>
+                    Rice Plot
+                    <select name="plot_id" id="quickHarvestPlot" required></select>
+                </label>
+                <div class="form-row">
+                    <label>
+                        Harvest Date
+                        <input type="date" name="harvest_date" id="quickHarvestDate" required>
+                    </label>
+                    <label>
+                        Quantity (kg)
+                        <input type="number" name="quantity" min="0.01" step="0.01" placeholder="e.g. 250" required>
+                    </label>
+                </div>
+                <label>
+                    Notes (optional)
+                    <input type="text" name="notes" placeholder="e.g. Good moisture level, Grade A grain">
+                </label>
+                <div class="modal-actions">
+                    <button type="submit" class="primary-btn">Save Harvest</button>
+                    <button type="button" class="btn-secondary" data-close>Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Quick Modal: Add Expense -->
+    <div id="modalQuickExpense" class="modal" hidden>
+        <div class="modal-box">
+            <button type="button" class="close" data-close aria-label="Close">×</button>
+            <h2>💸 Quick Add Expense</h2>
+            <p class="modal-sub">Record an expense assigned to a plot or the whole farm.</p>
+            <form id="formQuickExpense">
+                <label>
+                    Assign To
+                    <select name="plot_id" id="quickExpensePlot">
+                        <option value="">Whole Farm (All Plots)</option>
+                    </select>
+                </label>
+                <div class="form-row">
+                    <label>
+                        Category
+                        <select name="category" required>
+                            <option value="Seed">Seed</option>
+                            <option value="Fertilizer">Fertilizer</option>
+                            <option value="Pesticide">Pesticide</option>
+                            <option value="Labor">Labor</option>
+                            <option value="Fuel">Fuel</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </label>
+                    <label>
+                        Amount (₱)
+                        <input type="number" name="amount" min="0.01" step="0.01" placeholder="e.g. 1500" required>
+                    </label>
+                </div>
+                <label>
+                    Transaction Date
+                    <input type="date" name="transaction_date" id="quickExpenseDate" required>
+                </label>
+                <label>
+                    Notes (optional)
+                    <input type="text" name="notes" placeholder="e.g. 2 bags Complete fertilizer">
+                </label>
+                <input type="hidden" name="transaction_type" value="Expense">
+                <div class="modal-actions">
+                    <button type="submit" class="primary-btn">Add Expense</button>
+                    <button type="button" class="btn-secondary" data-close>Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Quick Modal: Add Sale -->
+    <div id="modalQuickSale" class="modal" hidden>
+        <div class="modal-box">
+            <button type="button" class="close" data-close aria-label="Close">×</button>
+            <h2>💰 Quick Add Sale</h2>
+            <p class="modal-sub">Record income from a harvest sale or farm produce.</p>
+            <form id="formQuickSale">
+                <label>
+                    Assign To
+                    <select name="plot_id" id="quickSalePlot">
+                        <option value="">Whole Farm (All Plots)</option>
+                    </select>
+                </label>
+                <div class="form-row">
+                    <label>
+                        Category
+                        <select name="category" required>
+                            <option value="Harvest Sale">Harvest Sale</option>
+                            <option value="Other Income">Other Income</option>
+                        </select>
+                    </label>
+                    <label>
+                        Amount (₱)
+                        <input type="number" name="amount" min="0.01" step="0.01" placeholder="e.g. 18500" required>
+                    </label>
+                </div>
+                <label>
+                    Transaction Date
+                    <input type="date" name="transaction_date" id="quickSaleDate" required>
+                </label>
+                <label>
+                    Notes (optional)
+                    <input type="text" name="notes" placeholder="e.g. Sold 10 cavans of palay">
+                </label>
+                <input type="hidden" name="transaction_type" value="Income">
+                <div class="modal-actions">
+                    <button type="submit" class="primary-btn">Add Sale</button>
+                    <button type="button" class="btn-secondary" data-close>Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Quick Modal: Tick Task -->
+    <div id="modalQuickTask" class="modal" hidden>
+        <div class="modal-box">
+            <button type="button" class="close" data-close aria-label="Close">×</button>
+            <h2>✅ Complete Tasks</h2>
+            <p class="modal-sub">Check off watering, fertilizing, and weeding tasks due today.</p>
+            <div id="quickTasksContainer" class="quick-tasks-list"></div>
+            <div class="modal-actions">
+                <button type="button" class="primary-btn" data-close>Done</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <template id="tpl-plot-card">
+        <div class="plot-card">
+            <strong data-field="name"></strong>
+            <small data-field="crop"></small>
+            <div>
+                <span class="badge" data-badge="crop"></span>
+                <span class="badge" data-badge="status"></span>
+            </div>
+        </div>
+    </template>
+
+    <template id="tpl-task-item">
+        <div class="list-row task-row-item">
+            <label class="task-check-wrap">
+                <input type="checkbox" data-action="toggle-task" title="Click to mark as completed">
+                <span class="task-content">
+                    <strong data-field="label"></strong>
+                    <small data-field="sublabel"></small>
+                </span>
+            </label>
+            <div class="task-tags">
+                <span class="badge task-type-badge" data-badge="task-type"></span>
+                <span class="badge" data-badge="state"></span>
+            </div>
+        </div>
+    </template>
+
+    <template id="tpl-harvest-item">
+        <div class="list-row">
+            <span data-field="label"></span>
+            <strong data-field="quantity"></strong>
+        </div>
+    </template>
+
+    <template id="tpl-seed-item">
+        <div class="list-row">
+            <span data-field="name"></span>
+            <strong>
+                <span data-field="quantity"></span>
+                <span class="badge low" data-role="low" hidden>Low</span>
+            </strong>
+        </div>
+    </template>
+
+    <template id="tpl-empty">
+        <div class="empty" data-field="text"></div>
+    </template>
+
+    <script src="../assets/js/core.js"></script>
+    <script src="../assets/js/layout.js"></script>
+    <script src="dashboard.js"></script>
+    <script src="../Chat/chat.js"></script>
+</body>
+
+</html>

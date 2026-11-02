@@ -1,0 +1,597 @@
+/* ==========================================================================
+   inventory.css
+   Seed & Harvest page: Clean white card theme, green accents,
+   side-by-side layout (Form on left, Table on right).
+   ========================================================================== */
+
+.page-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #728276;
+    margin-bottom: 4px;
+}
+
+/* ---------- Tabs Card ---------- */
+.inventory-tabs {
+    background: #ffffff;
+    border: 1px solid #e3ebe1;
+    border-radius: 14px;
+    padding: 12px 18px;
+    margin-bottom: 18px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.tab-group {
+    display: inline-flex;
+    gap: 6px;
+    padding: 4px;
+    background: #eef4ed;
+    border-radius: 10px;
+}
+
+.tab-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 36px;
+    padding: 0 18px;
+    border-radius: 8px;
+    background: transparent;
+    color: #55665a;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all .15s;
+}
+
+.tab-btn:hover {
+    background: rgba(27, 94, 53, 0.08);
+    color: #1b5e35;
+}
+
+.tab-btn.active,
+.tab-btn.active:hover {
+    background: #1b5e35;
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 2px 6px rgba(27, 94, 53, 0.22);
+}
+
+/* ---------- Two-Column Layout (Wider Form on Left, Table on Right) ---------- */
+.inventory-layout {
+    display: grid;
+    grid-template-columns: minmax(320px, 460px) minmax(0, 1fr);
+    gap: 18px;
+    align-items: start;
+}
+
+.inventory-tab[hidden] {
+    display: none;
+}
+
+/* ---------- Cards ---------- */
+.card {
+    background: #ffffff;
+    border: 1px solid #e3ebe1;
+    border-radius: 14px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.card h2 {
+    font-family: Georgia, serif;
+    font-size: 19px;
+    font-weight: 700;
+    color: #1a2e22;
+    margin: 0 0 4px;
+}
+
+.card > p {
+    font-size: 12px;
+    color: #647368;
+    margin: 0 0 16px;
+}
+
+/* ---------- Form (Left Column) ---------- */
+.form-card {
+    padding: 20px 22px;
+}
+
+.form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.form-grid label.full,
+.form-grid button.full {
+    grid-column: 1 / -1;
+}
+
+.form-row label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #55665a;
+}
+
+.form-row input,
+.form-row select {
+    width: 100%;
+    min-width: 0;
+    height: 38px;
+    border: 1px solid #d4ded3;
+    border-radius: 8px;
+    background: #ffffff;
+    padding: 0 12px;
+    font-size: 13px;
+    color: #1f3024;
+    outline: none;
+    transition: border-color .15s, box-shadow .15s;
+}
+
+.form-row input:focus,
+.form-row select:focus {
+    border-color: #2b7650;
+    box-shadow: 0 0 0 3px rgba(43, 118, 80, 0.12);
+}
+
+.submit-btn,
+.form-row .submit-btn {
+    width: 100%;
+    height: 38px;
+    margin-top: 4px;
+    border-radius: 8px;
+    background: #1b5e35;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: background .15s, box-shadow .15s;
+}
+
+.submit-btn:hover,
+.form-row .submit-btn:hover {
+    background: #123728;
+    box-shadow: 0 2px 8px rgba(18, 55, 40, .25);
+}
+
+/* ---------- Tables (Right Column) ---------- */
+.table-card {
+    padding: 20px 22px;
+}
+
+.table-wrap {
+    border: 1px solid #e4e9e2;
+    border-radius: 10px;
+    overflow-x: auto;
+    background: #ffffff;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: #f7f9f6;
+    color: #6b7a70;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 11px 14px;
+    border-bottom: 1px solid #e4e9e2;
+    text-align: left;
+    white-space: nowrap;
+}
+
+td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #eef2ec;
+    font-size: 13px;
+    color: #1c2b22;
+    vertical-align: middle;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+tbody tr:hover {
+    background: #fafcfa;
+}
+
+/* Quantity input inside Seed table */
+.cell-input.qty {
+    width: 90px;
+    height: 32px;
+    border: 1px solid #d4ded3;
+    border-radius: 6px;
+    background: #ffffff;
+    padding: 0 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1c2b22;
+    outline: none;
+    transition: border-color .15s, box-shadow .15s;
+}
+
+.cell-input.qty:focus {
+    border-color: #2b7650;
+    box-shadow: 0 0 0 2px rgba(43, 118, 80, 0.12);
+}
+
+/* Action buttons inside Table */
+td:last-child {
+    white-space: nowrap;
+}
+
+.small {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    padding: 0 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    border: none;
+    background: #e6f2ea;
+    color: #1b5e35;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+    margin-right: 4px;
+}
+
+.small:hover {
+    background: #d3e9db;
+}
+
+.small.danger {
+    background: #fdeeed;
+    color: #b34d38;
+}
+
+.small.danger:hover {
+    background: #fbd6d2;
+    color: #922b17;
+}
+
+/* Badges */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+.badge.rice {
+    background: #e2f4e8;
+    color: #1b6838;
+}
+
+.badge.done {
+    background: #e2f4e8;
+    color: #1b6838;
+}
+
+.badge.low {
+    background: #fdf0e7;
+    color: #a84e20;
+}
+
+/* Empty state row */
+.empty-row td {
+    text-align: center;
+    color: #728276;
+    font-size: 13px;
+    font-style: italic;
+    padding: 32px 14px;
+}
+
+/* ---------- User Avatar in Header ---------- */
+.user-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #e6f2ea;
+    color: #1b5e35;
+    flex-shrink: 0;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 960px) {
+    .inventory-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==========================================================================
+   Supplies Summary & Materials Enhancements
+   ========================================================================== */
+
+.supplies-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.supplies-stat-card {
+    background: #fff;
+    border: 1px solid #e3dac5;
+    border-left: 4px solid #2e7b3c;
+    border-radius: 12px;
+    padding: 16px 18px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.supplies-stat-card.border-rice      { border-left-color: #2e7b3c; }
+.supplies-stat-card.border-fertilize { border-left-color: #3b82c4; }
+.supplies-stat-card.border-pest      { border-left-color: #e07a3b; }
+.supplies-stat-card.border-other     { border-left-color: #8e44ad; }
+
+.supplies-stat-card span {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #6d665f;
+    margin-bottom: 4px;
+}
+
+.supplies-stat-card b {
+    font: 700 28px/1 'Inter', system-ui, sans-serif;
+    color: #1a2e22;
+}
+
+@media (max-width: 900px) {
+    .supplies-summary-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 550px) {
+    .supplies-summary-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.table-head-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+}
+
+.category-pills {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.cat-pill {
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid #d4dec9;
+    background: #f7f9f6;
+    font-size: 12px;
+    font-weight: 600;
+    color: #4f6153;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.cat-pill:hover {
+    background: #e7f0e5;
+    color: #1b5e35;
+}
+
+.cat-pill.active {
+    background: #1b5e35;
+    color: #fff;
+    border-color: #1b5e35;
+}
+
+.qty-unit-row {
+    display: flex;
+    gap: 10px;
+}
+
+.row-actions {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.btn-action-use {
+    background: #fff5e6;
+    color: #b75900;
+    border: 1px solid #f0d2b0;
+}
+
+.btn-action-use:hover {
+    background: #ffe8cc;
+}
+
+.btn-action-restock {
+    background: #eef7f0;
+    color: #1b6838;
+    border: 1px solid #c2e2cc;
+}
+
+.btn-action-restock:hover {
+    background: #dcf0e2;
+}
+
+.low-stock-text {
+    color: #d35400;
+    font-weight: 700;
+}
+
+.full-width-card {
+    grid-column: 1 / -1;
+}
+
+/* Badges for supplies */
+.badge.fertilize { background: #e8f4fc; color: #1b659d; }
+.badge.pest      { background: #fdf0ed; color: #c0392b; }
+.badge.inspect   { background: #f3ebfa; color: #7d3c98; }
+.badge.other     { background: #f0f0ed; color: #555550; }
+.badge.planted   { background: #e2f4e8; color: #1b6838; }
+.badge.maintenance { background: #fbeae8; color: #c0392b; }
+
+/* Modals */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+    backdrop-filter: blur(2px);
+}
+
+.modal[hidden] {
+    display: none;
+}
+
+.modal-box {
+    position: relative;
+    background: #fff;
+    border-radius: 14px;
+    padding: 26px 28px;
+    width: min(540px, 100%);
+    box-shadow: 0 16px 45px rgba(0, 0, 0, 0.25);
+}
+
+.modal-box h2 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    color: #1a241e;
+}
+
+.modal-sub {
+    margin: 0 0 18px;
+    font-size: 13px;
+    color: #6b6258;
+}
+
+.modal-box form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.modal-box label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #4b453e;
+}
+
+.modal-box input,
+.modal-box select,
+.modal-box textarea {
+    height: 38px;
+    border: 1px solid #d3c7b2;
+    border-radius: 8px;
+    background: #fff;
+    padding: 8px 12px;
+    font: inherit;
+    font-size: 14px;
+    color: #1a241e;
+    outline: none;
+}
+
+.modal-box textarea {
+    height: 70px;
+    resize: vertical;
+}
+
+.modal-box input:focus,
+.modal-box select:focus,
+.modal-box textarea:focus {
+    border-color: #2e7b3c;
+    box-shadow: 0 0 0 2px rgba(46, 123, 60, 0.2);
+}
+
+.modal-box .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.modal-actions button {
+    height: 38px;
+    padding: 0 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.primary-btn {
+    background: #2e7b3c;
+    color: #fff;
+    border: 0;
+}
+
+.primary-btn:hover {
+    background: #236330;
+}
+
+.btn-secondary {
+    background: #f0ebe1;
+    color: #4b453e;
+    border: 1px solid #d3c7b2;
+}
+
+.btn-secondary:hover {
+    background: #e4ded2;
+}
+
+.modal-box .close {
+    position: absolute;
+    right: 18px;
+    top: 18px;
+    background: transparent;
+    border: 0;
+    font-size: 24px;
+    color: #7a7065;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+}
+
