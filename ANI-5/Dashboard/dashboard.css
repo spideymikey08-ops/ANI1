@@ -1,0 +1,247 @@
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-bottom: 42px;
+}
+ 
+.stat {
+    background: #fff;
+    border: 1px solid #e3dac5;
+    border-radius: 10px;
+    padding: 24px 19px;
+}
+ 
+.stat b {
+    display: block;
+    font: 700 34px Georgia, serif;
+    color: #2e7b3c;
+    margin-bottom: 12px;
+}
+ 
+.stat span {
+    color: #6d665f;
+}
+ 
+.two-col {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 28px;
+}
+ 
+.stack {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+ 
+@media (max-width: 900px) {
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+ 
+    .two-col {
+        grid-template-columns: 1fr;
+    }
+}
+ 
+@media (max-width: 520px) {
+    .stats {
+        grid-template-columns: 1fr;
+    }
+}
+ 
+ 
+/* ==========================================================================
+   Dashboard visual separation
+   Clearer borders keep headings, numbers, and lists from looking like they
+   are floating on the page. These are dashboard-only styling overrides.
+   ========================================================================== */
+ 
+.page-header {
+    padding-bottom: 20px;
+    border-bottom: 2px solid #d6cbb5;
+}
+ 
+.stats {
+    gap: 16px;
+    margin-bottom: 30px;
+}
+ 
+.stat {
+    border: 1px solid #c8b99b;
+    border-bottom: 4px solid #2e7b3c;
+    border-radius: 12px;
+    box-shadow: 0 2px 5px rgba(34, 52, 35, 0.06);
+}
+ 
+.stat b {
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e5dece;
+}
+ 
+.stat span {
+    display: block;
+    line-height: 1.5;
+}
+ 
+.card {
+    border: 1px solid #c8b99b;
+    border-top: 3px solid #2e7b3c;
+    box-shadow: 0 2px 6px rgba(34, 52, 35, 0.05);
+}
+ 
+.card h2 {
+    padding-bottom: 12px;
+    border-bottom: 1px solid #ded4c1;
+}
+ 
+.plot-card {
+    border: 1px solid #b8c9ad;
+    border-left: 4px solid #2e7b3c;
+    box-shadow: 0 1px 3px rgba(34, 52, 35, 0.04);
+}
+ 
+.list-row {
+    border-bottom: 1px solid #d8cdb8;
+    padding: 14px 10px;
+}
+ 
+.list-row:nth-child(odd) {
+    background: #fbfaf6;
+}
+ 
+.list-row:last-child {
+    border-bottom: 0;
+}
+ 
+.empty {
+    border: 1px dashed #c8b99b;
+    border-radius: 8px;
+    background: #fbfaf6;
+    padding: 18px;
+}
+ 
+@media (max-width: 520px) {
+    .stat {
+        padding: 20px 16px;
+    }
+ 
+    .card {
+        padding: 16px;
+    }
+}
+ 
+ 
+/* ==========================================================================
+   Dashboard layout: 3 stat tiles on top, then a 2 x 2 grid of cards.
+   Left column: Plot Overview, Recent Harvests.
+   Right column: Today's Watering, Seed Inventory.
+   ========================================================================== */
+ 
+.dash-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 20px;
+    align-items: stretch;
+}
+ 
+.dash-grid .card {
+    margin-bottom: 0;
+    border-top: 1px solid #c8b99b;
+}
+ 
+/* Plot Overview: compact rows instead of cards */
+.dash-plots .plot-grid {
+    display: block;
+}
+ 
+.dash-plots .plot-card {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2px 12px;
+    padding: 12px 4px;
+    border: 0;
+    border-bottom: 1px solid #d8cdb8;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+    transition: none;
+}
+ 
+.dash-plots .plot-card:hover {
+    transform: none;
+    box-shadow: none;
+}
+ 
+.dash-plots .plot-card:last-child {
+    border-bottom: 0;
+}
+ 
+.dash-plots .plot-card strong {
+    flex: 1 1 60%;
+    margin: 0;
+}
+ 
+.dash-plots .plot-card small {
+    order: 3;
+    flex: 1 1 100%;
+    margin: 0;
+    font-size: 12px;
+}
+ 
+.dash-plots .plot-card > div {
+    order: 2;
+}
+ 
+/* The row shows only the status; the crop is already the subtitle */
+.dash-plots .plot-card .badge[data-badge="crop"] {
+    display: none;
+}
+ 
+.dash-plots .plot-card .badge {
+    margin-right: 0;
+}
+ 
+@media (max-width: 900px) {
+    .dash-grid {
+        grid-template-columns: 1fr;
+    }
+}
+ 
+ 
+/* ==========================================================================
+   Stat tiles: label on top, big number below, colored left accent edge.
+   ========================================================================== */
+ 
+.stats .stat {
+    padding: 18px 22px 20px;
+    border: 0;
+    border-left: 4px solid var(--stat-accent, #2e7b3c);
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(34, 52, 35, 0.08);
+}
+ 
+.stat-green { --stat-accent: #2e7b3c; }
+.stat-blue  { --stat-accent: #3b82c4; }
+.stat-gold  { --stat-accent: #e0a93b; }
+ 
+.stats .stat span {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #5d665f;
+}
+ 
+.stats .stat b {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font: 700 38px/1.1 'Inter', system-ui, sans-serif;
+    letter-spacing: -0.02em;
+    color: #14231b;
+}
+ 

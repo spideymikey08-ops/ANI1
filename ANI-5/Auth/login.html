@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Ani — Login</title>
+    <link rel="stylesheet" href="../assets/css/base.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <link rel="stylesheet" href="auth.css">
+</head>
+<body class="auth-page login-page" data-page="auth">
+    <main class="auth-scene login-scene">
+        <section class="auth-panel login-panel" aria-labelledby="login-title">
+            <h1 id="login-title"><a class="login-title-link" href="../landing.html" aria-label="Return to landing page">LOGIN</a></h1>
+            <form id="loginForm">
+                <label for="username">Username</label>
+                <input type="text" id="username" autocomplete="username" required autofocus>
+                <label for="password">Password</label>
+                <input type="password" id="password" autocomplete="current-password" required>
+                <button type="submit">LOGIN</button>
+            </form>
+            <p class="auth-switch">Don’t have an account? <a href="register.html">Register here.</a></p>
+        </section>
+    </main>
+    <div id="toast" class="toast"></div>
+    <script src="../assets/js/core.js"></script>
+    <script src="auth.js"></script>
+</body>
+</html>
