@@ -34,6 +34,38 @@ async function loadPlots() {
         toast(e.message, true);
     }
 }
+
+/* ---------- Add a plot (button opens a popup form) ---------- */
+ 
+function openPlotModal() {
+    plotModal.hidden = false;
+    plotModal.querySelector('input[name="name"]').focus();
+}
+ 
+function closePlotModal() {
+    plotModal.hidden = true;
+}
+ 
+document.getElementById('addPlotBtn').addEventListener('click', openPlotModal);
+document.getElementById('plotClose').addEventListener('click', closePlotModal);
+ 
+plotModal.addEventListener('click', e => {
+    if (e.target === plotModal) closePlotModal();
+});
+ 
+document.getElementById('plotForm').addEventListener('submit', async e => {
+    e.preventDefault();
+ 
+    try {
+        await post('Plots/add_plot.php', Object.fromEntries(new FormData(e.target)));
+        e.target.reset();
+        closePlotModal();
+        toast('Plot added.');
+        loadPlots();
+    } catch (x) {
+        toast(x.message, true);
+    }
+});
  
 /* ---------- Plot details (click a plot card) ---------- */
  
