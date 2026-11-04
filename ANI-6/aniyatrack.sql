@@ -1,0 +1,361 @@
+-- Aniya / AniTrack database
+-- Uses ONE database only: aniyatrack.
+-- Safe to run against an existing installation: it does not drop existing
+-- tables or records, and it can be imported again at any time.
+--
+-- phpMyAdmin: open the Import tab (no database selected) and choose this file.
+
+CREATE DATABASE IF NOT EXISTS aniyatrack
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
+
+USE aniyatrack;
+
+-- ---------------------------------------------------------------------
+-- Tables
+-- Every farm record belongs to one user (user_id), so each account only
+-- sees its own plots, seeds, supplies and finance records.
+-- ---------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS plots (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNSIGNED DEFAULT NULL,
+    name VARCHAR(100) NOT NULL,
+    crop_type ENUM('Rice') NOT NULL DEFAULT 'Rice',
+    status ENUM('Available','Planted','Occupied','Maintenance') NOT NULL DEFAULT 'Available',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_plot_user_name (user_id, name)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS plantings (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    plot_id INT UNSIGNED NOT NULL,
+    crop_name VARCHAR(150) NOT NULL,
+    variety VARCHAR(150) DEFAULT NULL,
+    planted_date DATE NOT NULL,
+    expected_harvest_date DATE DEFAULT NULL,
+    notes TEXT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_planting_plot FOREIGN KEY (plot_id)
+        REFERENCES plots(id) ON DELETE CASCADE,
+    INDEX idx_planting_date (planted_date),
+    INDEX idx_expected_harvest (expected_harvest_date)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS watering_tasks (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    plot_id INT UNSIGNED NOT NULL,
+    task_date DATE NOT NULL,
+    task_type ENUM('Water','Fertilize','Weed','Pest Control','Inspect','Other') NOT NULL DEFAULT 'Water',
+    done TINYINT(1) NOT NULL DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_watering_plot FOREIGN KEY (plot_id)
+        REFERENCES plots(id) ON DELETE CASCADE,
+    INDEX idx_task_date_done (task_date, done)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS harvests (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    plot_id INT UNSIGNED NOT NULL,
+    harvest_date DATE NOT NULL,
+    quantity DECIMAL(10,2) NOT NULL,
+    notes VARCHAR(255) DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_harvest_plot FOREIGN KEY (plot_id)
+        REFERENCES plots(id) ON DELETE CASCADE,
+    INDEX idx_harvest_date (harvest_date)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS seeds (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNSIGNED DEFAULT NULL,
+    seed_name VARCHAR(150) NOT NULL,
+    crop_type ENUM('Rice') NOT NULL DEFAULT 'Rice',
+    quantity_g DECIMAL(10,2) NOT NULL DEFAULT 0,
+    threshold_g DECIMAL(10,2) NOT NULL DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_seed_user (user_id)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS finance_transactions (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNSIGNED DEFAULT NULL,
+    plot_id INT UNSIGNED DEFAULT NULL,
+    transaction_type ENUM('Expense','Income') NOT NULL,
+    category VARCHAR(100) NOT NULL,
+    amount DECIMAL(12,2) NOT NULL DEFAULT 0,
+    transaction_date DATE NOT NULL,
+    notes VARCHAR(500) DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_finance_plot FOREIGN KEY (plot_id)
+        REFERENCES plots(id) ON DELETE SET NULL,
+    INDEX idx_finance_date (transaction_date),
+    INDEX idx_finance_type (transaction_type),
+    INDEX idx_finance_user (user_id)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS inventory_items (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNSIGNED DEFAULT NULL,
+    item_name VARCHAR(150) NOT NULL,
+    category ENUM('Rice Seeds','Fertilizers','Pesticides','Other Supplies') NOT NULL,
+    quantity DECIMAL(10,2) NOT NULL DEFAULT 0,
+    unit VARCHAR(30) NOT NULL DEFAULT 'kg',
+    purchase_date DATE NOT NULL,
+    threshold DECIMAL(10,2) NOT NULL DEFAULT 0,
+    cost DECIMAL(12,2) DEFAULT NULL,
+    notes TEXT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_category (category),
+    INDEX idx_purchase_date (purchase_date),
+    INDEX idx_inventory_user (user_id)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS inventory_usage_logs (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    item_id INT UNSIGNED NOT NULL,
+    quantity_used DECIMAL(10,2) NOT NULL,
+    used_date DATE NOT NULL,
+    plot_id INT UNSIGNED DEFAULT NULL,
+    purpose VARCHAR(255) DEFAULT NULL,
+    logged_by VARCHAR(100) DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_usage_item FOREIGN KEY (item_id)
+        REFERENCES inventory_items(id) ON DELETE CASCADE,
+    CONSTRAINT fk_usage_plot FOREIGN KEY (plot_id)
+        REFERENCES plots(id) ON DELETE SET NULL,
+    INDEX idx_item_date (item_id, used_date)
+) ENGINE=InnoDB;
+
+-- email is optional: it must be stored as NULL (never '') when left blank,
+-- because the UNIQUE index would otherwise reject a second blank email.
+CREATE TABLE IF NOT EXISTS users (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    full_name VARCHAR(100) NOT NULL,
+    email VARCHAR(150) DEFAULT NULL UNIQUE,
+    phone VARCHAR(30) DEFAULT NULL,
+    username VARCHAR(30) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    role ENUM('admin','user') NOT NULL DEFAULT 'user',
+    status ENUM('active','deactivated','pending','rejected') NOT NULL DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_user_role (role),
+    INDEX idx_user_status (status)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS activity_logs (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNSIGNED DEFAULT NULL,
+    username VARCHAR(50) NOT NULL,
+    action VARCHAR(100) NOT NULL,
+    details TEXT DEFAULT NULL,
+    ip_address VARCHAR(45) DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_log_created (created_at),
+    INDEX idx_log_action (action)
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------
+-- Migrations for existing databases
+-- Each procedure is created, called ONCE, then dropped.
+-- ---------------------------------------------------------------------
+
+-- users: make sure every column exists and email is optional
+DROP PROCEDURE IF EXISTS migrate_users_table;
+DELIMITER //
+CREATE PROCEDURE migrate_users_table()
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND COLUMN_NAME = 'email'
+    ) THEN
+        ALTER TABLE users
+            ADD COLUMN email VARCHAR(150) NULL DEFAULT NULL UNIQUE AFTER full_name;
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND COLUMN_NAME = 'phone'
+    ) THEN
+        ALTER TABLE users
+            ADD COLUMN phone VARCHAR(30) DEFAULT NULL AFTER email;
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND COLUMN_NAME = 'role'
+    ) THEN
+        ALTER TABLE users
+            ADD COLUMN role ENUM('admin','user') NOT NULL DEFAULT 'user' AFTER password_hash;
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND COLUMN_NAME = 'status'
+    ) THEN
+        ALTER TABLE users
+            ADD COLUMN status ENUM('active','deactivated','pending','rejected') NOT NULL DEFAULT 'active' AFTER role;
+    END IF;
+
+    -- Always make sure email is optional and status has all its values
+    ALTER TABLE users
+        MODIFY COLUMN email VARCHAR(150) NULL DEFAULT NULL,
+        MODIFY COLUMN status ENUM('active','deactivated','pending','rejected') NOT NULL DEFAULT 'active';
+
+    -- Blank emails saved as '' would clash on the UNIQUE index: store NULL instead
+    UPDATE users SET email = NULL WHERE email = '';
+
+    -- Make sure the 'admin' account really is an admin
+    UPDATE users SET role = 'admin' WHERE username = 'admin';
+END //
+DELIMITER ;
+CALL migrate_users_table();
+DROP PROCEDURE IF EXISTS migrate_users_table;
+
+-- plots / finance / seeds / supplies: status values and record ownership
+DROP PROCEDURE IF EXISTS migrate_ownership;
+DELIMITER //
+CREATE PROCEDURE migrate_ownership()
+BEGIN
+    DECLARE owner_id INT UNSIGNED DEFAULT NULL;
+
+    ALTER TABLE plots
+        MODIFY COLUMN status ENUM('Available','Planted','Occupied','Maintenance') NOT NULL DEFAULT 'Available';
+    UPDATE plots SET status = 'Planted' WHERE status = 'Occupied';
+
+    ALTER TABLE finance_transactions
+        MODIFY COLUMN plot_id INT UNSIGNED NULL;
+
+    -- plots.user_id
+    IF NOT EXISTS (
+        SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'plots' AND COLUMN_NAME = 'user_id'
+    ) THEN
+        ALTER TABLE plots ADD COLUMN user_id INT UNSIGNED DEFAULT NULL AFTER id;
+    END IF;
+
+    -- A plot name used to be unique for everybody; now it is unique per user
+    IF EXISTS (
+        SELECT 1 FROM INFORMATION_SCHEMA.STATISTICS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'plots' AND INDEX_NAME = 'name'
+    ) THEN
+        ALTER TABLE plots DROP INDEX `name`;
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM INFORMATION_SCHEMA.STATISTICS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'plots' AND INDEX_NAME = 'uq_plot_user_name'
+    ) THEN
+        ALTER TABLE plots ADD UNIQUE KEY uq_plot_user_name (user_id, name);
+    END IF;
+
+    -- seeds.user_id
+    IF NOT EXISTS (
+        SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'seeds' AND COLUMN_NAME = 'user_id'
+    ) THEN
+        ALTER TABLE seeds ADD COLUMN user_id INT UNSIGNED DEFAULT NULL AFTER id;
+        ALTER TABLE seeds ADD INDEX idx_seed_user (user_id);
+    END IF;
+
+    -- inventory_items.user_id
+    IF NOT EXISTS (
+        SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'inventory_items' AND COLUMN_NAME = 'user_id'
+    ) THEN
+        ALTER TABLE inventory_items ADD COLUMN user_id INT UNSIGNED DEFAULT NULL AFTER id;
+        ALTER TABLE inventory_items ADD INDEX idx_inventory_user (user_id);
+    END IF;
+
+    -- finance_transactions.user_id
+    IF NOT EXISTS (
+        SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'finance_transactions' AND COLUMN_NAME = 'user_id'
+    ) THEN
+        ALTER TABLE finance_transactions ADD COLUMN user_id INT UNSIGNED DEFAULT NULL AFTER id;
+        ALTER TABLE finance_transactions ADD INDEX idx_finance_user (user_id);
+    END IF;
+
+    -- Finance rows that belong to a plot follow that plot's owner
+    UPDATE finance_transactions f
+    JOIN plots p ON p.id = f.plot_id
+    SET f.user_id = p.user_id
+    WHERE f.user_id IS NULL AND p.user_id IS NOT NULL;
+
+    -- Records that existed before accounts owned data have no owner yet.
+    -- Hand them to the first regular (farmer) account, or to the first
+    -- account if there is none, so nothing is left invisible.
+    SELECT id INTO owner_id FROM users ORDER BY (role = 'admin'), id LIMIT 1;
+
+    IF owner_id IS NOT NULL THEN
+        UPDATE plots                SET user_id = owner_id WHERE user_id IS NULL;
+        UPDATE seeds                SET user_id = owner_id WHERE user_id IS NULL;
+        UPDATE inventory_items      SET user_id = owner_id WHERE user_id IS NULL;
+        UPDATE finance_transactions SET user_id = owner_id WHERE user_id IS NULL;
+    END IF;
+END //
+DELIMITER ;
+CALL migrate_ownership();
+DROP PROCEDURE IF EXISTS migrate_ownership;
+
+-- watering_tasks: make sure task_type exists
+DROP PROCEDURE IF EXISTS migrate_watering_task_type;
+DELIMITER //
+CREATE PROCEDURE migrate_watering_task_type()
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'watering_tasks' AND COLUMN_NAME = 'task_type'
+    ) THEN
+        ALTER TABLE watering_tasks
+            ADD COLUMN task_type ENUM(
+                'Water','Fertilize','Weed','Pest Control','Inspect','Other'
+            ) NOT NULL DEFAULT 'Water' AFTER task_date;
+    END IF;
+END //
+DELIMITER ;
+CALL migrate_watering_task_type();
+DROP PROCEDURE IF EXISTS migrate_watering_task_type;
+
+-- ---------------------------------------------------------------------
+-- Starter accounts only.
+-- No sample plots, seeds, supplies or finance records are created, so a
+-- new account starts completely empty.
+-- ---------------------------------------------------------------------
+-- Default Admin:  username 'admin',   password 'admin123'
+-- Sample farmer:  username 'farmer1', password 'admin123'
+INSERT IGNORE INTO users (id, full_name, email, phone, username, password_hash, role, status) VALUES
+(1, 'System Administrator', 'admin@aniya.local',   '09123456789', 'admin',   '$2y$10$zoNQFRXSP6wNugkS082EAu/kb1V/jPE9G4AHtPUSGj7EVqy2G3uFa', 'admin', 'active'),
+(2, 'Farmer Juan',          'farmer1@aniya.local', '09987654321', 'farmer1', '$2y$10$zoNQFRXSP6wNugkS082EAu/kb1V/jPE9G4AHtPUSGj7EVqy2G3uFa', 'user',  'active');
+
+-- Log the first setup only once, even if this file is imported many times
+INSERT INTO activity_logs (user_id, username, action, details)
+SELECT 1, 'admin', 'System Initialized', 'Database and default admin account configured'
+WHERE NOT EXISTS (SELECT 1 FROM activity_logs WHERE action = 'System Initialized');
+
+-- ---------------------------------------------------------------------
+-- OPTIONAL 1 - move the existing records to a different account.
+-- Records that existed before this update were given to the first farmer
+-- account. To give them to another account instead, replace YOUR_USERNAME,
+-- remove the two leading dashes on the lines below and run them.
+-- ---------------------------------------------------------------------
+-- SET @owner = (SELECT id FROM users WHERE username = 'YOUR_USERNAME');
+-- UPDATE plots                SET user_id = @owner;
+-- UPDATE seeds                SET user_id = @owner;
+-- UPDATE inventory_items      SET user_id = @owner;
+-- UPDATE finance_transactions SET user_id = @owner;
+
+-- ---------------------------------------------------------------------
+-- OPTIONAL 2 - delete the old sample data (the 3 sample plots, sample
+-- seeds, supplies and finance records created by earlier versions).
+-- Remove the two leading dashes to run it. This cannot be undone.
+-- ---------------------------------------------------------------------
+-- DELETE FROM plots WHERE name IN ('Plot 1 - North Paddy', 'Plot 2 - South Paddy', 'Plot 3 - East Terrace');
+-- DELETE FROM seeds WHERE seed_name IN ('NSIC Rc 222 (Tubigan 18)', 'PSB Rc 10 (Pagsanjan)', 'IR64 Inbred Rice');
+-- DELETE FROM inventory_items WHERE item_name IN ('NSIC Rc 222 (Tubigan 18)', 'PSB Rc 10 (Pagsanjan)', 'Complete 14-14-14 Fertilizer', 'Urea 46-0-0', 'Brodan 31.5 EC', 'Machete 5G Herbicide', 'Knapsack Sprayer Spares');
+-- DELETE FROM finance_transactions WHERE notes IN ('Purchased 2 bags certified seeds', 'Complete 14-14-14 fertilizer');
+
+-- ---------------------------------------------------------------------
+-- OPTIONAL 3 - reset the admin login to 'admin' / 'admin123'.
+-- ---------------------------------------------------------------------
+-- UPDATE users SET password_hash = '$2y$10$zoNQFRXSP6wNugkS082EAu/kb1V/jPE9G4AHtPUSGj7EVqy2G3uFa', role = 'admin', status = 'active' WHERE username = 'admin';

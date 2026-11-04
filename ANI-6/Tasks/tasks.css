@@ -1,0 +1,97 @@
+/* Tasks page: completed rows are dimmed. */
+.muted {
+    opacity: .6;
+}
+
+.task-type-badge {
+    white-space: nowrap;
+}
+
+/* ==========================================================================
+   Schedule a Task
+   Three equal fields and the submit button share one row on desktop, then
+   wrap to two columns on tablets and a single column on phones.
+   ========================================================================== */
+
+.task-card {
+    margin-bottom: 20px;
+}
+
+.task-card h2 {
+    margin-bottom: 6px;
+}
+
+.task-card > p {
+    margin-bottom: 20px;
+}
+
+.task-form {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+    gap: 16px;
+    align-items: end;
+}
+
+.task-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.task-field label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #3f4a41;
+}
+
+/* One shared look and height for every control, including the date picker */
+.task-field select,
+.task-field input[type="date"] {
+    width: 100%;
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid #d9cfb9;
+    border-radius: 8px;
+    background-color: #fff;
+    color: #1a241e;
+    font: inherit;
+    font-size: 14px;
+    line-height: 1.2;
+}
+
+.task-field select {
+    cursor: pointer;
+}
+
+.task-field select:focus-visible,
+.task-field input[type="date"]:focus-visible {
+    outline: 2px solid #2b7650;
+    outline-offset: 1px;
+    border-color: #2b7650;
+}
+
+.task-submit {
+    height: 40px;
+    padding: 0 22px;
+    border-radius: 8px;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+    .task-form {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .task-submit {
+        grid-column: 1 / -1;
+        width: 100%;
+    }
+}
+
+@media (max-width: 560px) {
+    .task-form {
+        grid-template-columns: 1fr;
+    }
+}

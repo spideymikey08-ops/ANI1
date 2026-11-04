@@ -1,0 +1,38 @@
+/* ==========================================================================
+   base.css
+   Reset, page defaults and design tokens shared by every page.
+   ========================================================================== */
+
+:root {
+    --color-bg: #f5f1e5;
+    --color-text: #10251a;
+    --color-heading: #123728;
+    --color-muted: #6b6258;
+    --color-border: #e3dac5;
+    --color-primary: #173d23;
+    --color-primary-hover: #245c35;
+    --color-sidebar: #17371f;
+    --color-link: #2b7650;
+    --font-heading: Georgia, serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #f5f1e5;
+    color: #10251a;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+}
+
+a {
+    color: #2b7650;
+}
+
+/* The hidden attribute must always win over component display rules */
+[hidden] {
+    display: none !important;
+}
