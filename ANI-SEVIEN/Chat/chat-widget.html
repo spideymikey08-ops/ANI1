@@ -1,0 +1,19 @@
+<button id="chatFab" class="chat-fab" aria-label="Open chat">💬</button>
+
+<section id="chatBox" class="chat-box" hidden>
+    <div class="chat-head">
+        <strong>🌾 Ask Ani</strong>
+        <button id="chatClose" aria-label="Close chat">✕</button>
+    </div>
+
+    <div id="chatLog" class="chat-log"></div>
+
+    <form id="chatForm" class="chat-form" autocomplete="off">
+        <input id="chatInput" maxlength="500" placeholder="Ask about your farm…">
+        <button type="submit">Send</button>
+    </form>
+</section>
+
+<template id="tpl-chat-msg">
+    <div class="chat-msg"></div>
+</template>

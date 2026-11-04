@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ani</title>
+    <script>
+        // Redirect to Admin Dashboard if admin, to User Dashboard if farmer, otherwise landing page
+        const user = localStorage.getItem('ani_user') || localStorage.getItem('aniya_user');
+        const role = localStorage.getItem('ani_role') || localStorage.getItem('aniya_role');
+
+        if (user) {
+            if (role === 'admin') {
+                window.location.replace('Admin/index.html');
+            } else {
+                window.location.replace('Dashboard/index.html');
+            }
+        } else {
+            window.location.replace('landing.html');
+        }
+    </script>
+</head>
+<body>
+    <noscript>
+        <p><a href="landing.html">Open Ani</a></p>
+    </noscript>
+</body>
+</html>
