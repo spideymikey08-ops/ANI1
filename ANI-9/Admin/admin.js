@@ -1,6 +1,5 @@
 /* ==========================================================================
    admin.js — Administrator Portal Logic
-   (Task, Harvest, Finance and Calendar management removed)
    ========================================================================== */
 
 // 1. Guard check: only admins can access
@@ -28,7 +27,7 @@ const views = {
 const viewTitles = {
     overview:    ['Administrator Dashboard', 'System overview, user accounts, and system maintenance.'],
     plots:       ['Plot Management', 'View, add, edit, or delete rice plots and planting assignments.'],
-    users:       ['User Management', 'View registered users, approve or reject farmer registrations, and manage account access.'],
+    users:       ['User Management', 'View registered user accounts and manage access permissions.'],
     maintenance: ['System Maintenance', 'Backup database, view security audit trails, and review system logs.']
 };
 
@@ -104,17 +103,14 @@ async function loadOverviewData() {
         const d = await api('Admin/get_admin_data.php');
         const ov = d.overview;
 
-        document.getElementById('statUsers').textContent =
-            ov.users.total_users || 0;
+        const statUsers = document.getElementById('statUsers');
+        if (statUsers) statUsers.textContent = ov.users.total_users || 0;
 
-        document.getElementById('statPlots').textContent =
-            ov.plots.total_plots || 0;
+        const statPlots = document.getElementById('statPlots');
+        if (statPlots) statPlots.textContent = ov.plots.total_plots || 0;
 
-        document.getElementById('statActiveUsers').textContent =
-            ov.users.active_users || 0;
-
-        document.getElementById('statPendingUsers').textContent =
-            ov.users.pending_users || 0;
+        const statActiveUsers = document.getElementById('statActiveUsers');
+        if (statActiveUsers) statActiveUsers.textContent = ov.users.active_users || 0;
 
     } catch (e) {
         toast(e.message, true);
@@ -130,6 +126,8 @@ async function loadAdminPlots() {
         allPlots = d.plots || [];
 
         const tbody = document.getElementById('plotsTableBody');
+        if (!tbody) return;
+
         if (!allPlots.length) {
             tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: #777;">No rice plots recorded yet.</td></tr>';
             return;
@@ -160,19 +158,22 @@ async function loadAdminPlots() {
     }
 }
 
-document.getElementById('adminPlotForm').addEventListener('submit', async e => {
-    e.preventDefault();
-    try {
-        const fd = Object.fromEntries(new FormData(e.target));
-        await post('Plots/add_plot.php', fd);
-        toast('Plot added successfully.');
-        closeModal('plotModal');
-        e.target.reset();
-        loadAdminPlots();
-    } catch (err) {
-        toast(err.message, true);
-    }
-});
+const adminPlotForm = document.getElementById('adminPlotForm');
+if (adminPlotForm) {
+    adminPlotForm.addEventListener('submit', async e => {
+        e.preventDefault();
+        try {
+            const fd = Object.fromEntries(new FormData(e.target));
+            await post('Plots/add_plot.php', fd);
+            toast('Plot added successfully.');
+            closeModal('plotModal');
+            e.target.reset();
+            loadAdminPlots();
+        } catch (err) {
+            toast(err.message, true);
+        }
+    });
+}
 
 window.openPlantModal = function(plotId, plotName) {
     document.getElementById('plantPlotId').value = plotId;
@@ -181,18 +182,21 @@ window.openPlantModal = function(plotId, plotName) {
     openModal('plantPlotModal');
 };
 
-document.getElementById('adminPlantForm').addEventListener('submit', async e => {
-    e.preventDefault();
-    try {
-        const fd = Object.fromEntries(new FormData(e.target));
-        await post('Plots/add_planting.php', fd);
-        toast('Planting recorded and plot marked planted.');
-        closeModal('plantPlotModal');
-        loadAdminPlots();
-    } catch (err) {
-        toast(err.message, true);
-    }
-});
+const adminPlantForm = document.getElementById('adminPlantForm');
+if (adminPlantForm) {
+    adminPlantForm.addEventListener('submit', async e => {
+        e.preventDefault();
+        try {
+            const fd = Object.fromEntries(new FormData(e.target));
+            await post('Plots/add_planting.php', fd);
+            toast('Planting recorded and plot marked planted.');
+            closeModal('plantPlotModal');
+            loadAdminPlots();
+        } catch (err) {
+            toast(err.message, true);
+        }
+    });
+}
 
 window.deletePlot = async function(plotId) {
     if (!confirm('Are you sure you want to delete this plot and its associated records?')) return;
@@ -206,7 +210,7 @@ window.deletePlot = async function(plotId) {
 };
 
 /* ==========================================================================
-   3. USER MANAGEMENT
+   3. USER MANAGEMENT (Pending accounts excluded)
    ========================================================================== */
 async function loadAdminUsers() {
     try {
@@ -216,30 +220,19 @@ async function loadAdminUsers() {
             body: JSON.stringify({ action: 'list' })
         });
 
-        const users = d.users || [];
+        const users = (d.users || []).filter(u => u.status !== 'pending');
         const tbody = document.getElementById('usersTableBody');
+        if (!tbody) return;
 
         if (!users.length) {
-            tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: #777;">No users found.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: #777;">No active users found.</td></tr>';
             return;
         }
 
         tbody.innerHTML = users.map((u, i) => {
             let statusActions = '';
 
-            if (u.role === 'user' && u.status === 'pending') {
-                statusActions = `
-                    <button type="button" class="btn-icon"
-                        onclick="reviewFarmerAccount(${u.id}, 'approve')">
-                        Approve
-                    </button>
-                    <button type="button" class="btn-icon danger"
-                        onclick="reviewFarmerAccount(${u.id}, 'reject')">
-                        Reject
-                    </button>
-                `;
-            } else if (u.role === 'user' &&
-                ['active', 'deactivated'].includes(u.status)) {
+            if (u.role === 'user' && ['active', 'deactivated'].includes(u.status)) {
                 statusActions = `
                     <button type="button" class="btn-icon"
                         onclick="toggleUserStatus(${u.id})">
@@ -287,15 +280,18 @@ async function loadAdminUsers() {
     }
 }
 
-document.getElementById('openAddUserModal').addEventListener('click', () => {
-    document.getElementById('userForm').reset();
-    document.getElementById('userFormAction').value = 'create';
-    document.getElementById('userFormId').value = '';
-    document.getElementById('userModalTitle').textContent = 'Add New User';
-    document.getElementById('userPasswordGroup').style.display = 'block';
-    document.getElementById('userPassword').required = true;
-    openModal('userModal');
-});
+const openAddUserModalBtn = document.getElementById('openAddUserModal');
+if (openAddUserModalBtn) {
+    openAddUserModalBtn.addEventListener('click', () => {
+        document.getElementById('userForm').reset();
+        document.getElementById('userFormAction').value = 'create';
+        document.getElementById('userFormId').value = '';
+        document.getElementById('userModalTitle').textContent = 'Add New User';
+        document.getElementById('userPasswordGroup').style.display = 'block';
+        document.getElementById('userPassword').required = true;
+        openModal('userModal');
+    });
+}
 
 window.openEditUserModal = function(u) {
     document.getElementById('userFormAction').value = 'update';
@@ -307,53 +303,34 @@ window.openEditUserModal = function(u) {
     document.getElementById('userRole').value = u.role;
     document.getElementById('userModalTitle').textContent = `Edit User`;
 
-    // Hide password on edit (use dedicated reset modal instead)
     document.getElementById('userPasswordGroup').style.display = 'none';
     document.getElementById('userPassword').required = false;
 
     openModal('userModal');
 };
 
-document.getElementById('userForm').addEventListener('submit', async e => {
-    e.preventDefault();
-    const data = Object.fromEntries(new FormData(e.target));
+const userForm = document.getElementById('userForm');
+if (userForm) {
+    userForm.addEventListener('submit', async e => {
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(e.target));
 
-    try {
-        const r = await post('Admin/users.php', data);
-        toast(r.message || 'User saved.');
-        closeModal('userModal');
-        loadAdminUsers();
-        loadOverviewData();
-    } catch (err) {
-        toast(err.message, true);
-    }
-});
+        try {
+            const r = await post('Admin/users.php', data);
+            toast(r.message || 'User saved.');
+            closeModal('userModal');
+            loadAdminUsers();
+            loadOverviewData();
+        } catch (err) {
+            toast(err.message, true);
+        }
+    });
+}
 
 window.toggleUserStatus = async function(id) {
     try {
         const r = await post('Admin/users.php', { action: 'toggle_status', id });
         toast(r.message);
-        loadAdminUsers();
-        loadOverviewData();
-    } catch (err) {
-        toast(err.message, true);
-    }
-};
-
-window.reviewFarmerAccount = async function(id, decision) {
-    const actionText = decision === 'approve' ? 'approve' : 'reject';
-
-    if (!confirm(`Are you sure you want to ${actionText} this farmer account?`)) {
-        return;
-    }
-
-    try {
-        const r = await post('Admin/users.php', {
-            action: decision,
-            id: id
-        });
-
-        toast(r.message || `Farmer account ${actionText}d successfully.`);
         loadAdminUsers();
         loadOverviewData();
     } catch (err) {
@@ -368,17 +345,20 @@ window.openResetPasswordModal = function(userId, username) {
     openModal('resetPassModal');
 };
 
-document.getElementById('resetPassForm').addEventListener('submit', async e => {
-    e.preventDefault();
-    const data = Object.fromEntries(new FormData(e.target));
-    try {
-        const r = await post('Admin/users.php', data);
-        toast(r.message);
-        closeModal('resetPassModal');
-    } catch (err) {
-        toast(err.message, true);
-    }
-});
+const resetPassForm = document.getElementById('resetPassForm');
+if (resetPassForm) {
+    resetPassForm.addEventListener('submit', async e => {
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(e.target));
+        try {
+            const r = await post('Admin/users.php', data);
+            toast(r.message);
+            closeModal('resetPassModal');
+        } catch (err) {
+            toast(err.message, true);
+        }
+    });
+}
 
 window.deleteUserAccount = async function(id) {
     if (!confirm('Permanently delete this user account?')) return;
@@ -400,6 +380,7 @@ async function loadAdminLogs() {
         const d = await api('Admin/logs.php');
         const logs = d.logs || [];
         const box = document.getElementById('fullAuditLogs');
+        if (!box) return;
 
         if (!logs.length) {
             box.innerHTML = '<p style="padding: 15px; color: #777;">No activity logs recorded yet.</p>';
@@ -422,39 +403,51 @@ async function loadAdminLogs() {
     }
 }
 
-document.getElementById('clearLogsBtn').addEventListener('click', async () => {
-    if (!confirm('Clear all system audit logs?')) return;
-    try {
-        const r = await post('Admin/logs.php', { action: 'clear' });
-        toast(r.message);
-        loadAdminLogs();
-    } catch (e) {
-        toast(e.message, true);
-    }
-});
+const clearLogsBtn = document.getElementById('clearLogsBtn');
+if (clearLogsBtn) {
+    clearLogsBtn.addEventListener('click', async () => {
+        if (!confirm('Clear all system audit logs?')) return;
+        try {
+            const r = await post('Admin/logs.php', { action: 'clear' });
+            toast(r.message);
+            loadAdminLogs();
+        } catch (e) {
+            toast(e.message, true);
+        }
+    });
+}
 
-document.getElementById('downloadBackupBtn').addEventListener('click', () => {
-    document.getElementById('backupConfirmMsg').hidden = false;
-    setTimeout(() => {
-        document.getElementById('backupConfirmMsg').hidden = true;
-    }, 4000);
-});
+const downloadBackupBtn = document.getElementById('downloadBackupBtn');
+if (downloadBackupBtn) {
+    downloadBackupBtn.addEventListener('click', () => {
+        const msg = document.getElementById('backupConfirmMsg');
+        if (msg) {
+            msg.hidden = false;
+            setTimeout(() => {
+                msg.hidden = true;
+            }, 4000);
+        }
+    });
+}
 
 /* ==========================================================================
    Logout
    ========================================================================== */
-document.getElementById('logoutBtn').addEventListener('click', async e => {
-    e.preventDefault();
-    try {
-        await post('Auth/logout.php', {});
-    } catch (err) { /* ignore */ }
+const logoutBtn = document.getElementById('logoutBtn');
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', async e => {
+        e.preventDefault();
+        try {
+            await post('Auth/logout.php', {});
+        } catch (err) { /* ignore */ }
 
-    localStorage.removeItem('ani_user');
-    localStorage.removeItem('ani_role');
-    localStorage.removeItem('aniya_user');
-    localStorage.removeItem('aniya_role');
-    window.location.href = urlFor('Auth/login.html');
-});
+        localStorage.removeItem('ani_user');
+        localStorage.removeItem('ani_role');
+        localStorage.removeItem('aniya_user');
+        localStorage.removeItem('aniya_role');
+        window.location.href = urlFor('Auth/login.html');
+    });
+}
 
 // Initial boot
 loadOverviewData();

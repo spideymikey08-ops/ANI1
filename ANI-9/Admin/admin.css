@@ -639,3 +639,35 @@
 .admin-nav button.active {
     padding-left: 14px;
 }
+
+/* ANI-9/Admin/admin.css */
+.admin-dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+    padding: 1.5rem;
+}
+
+/* If you use specific grid column spans, adjust them to fit your remaining widgets */
+.dashboard-card {
+    background: var(--card-bg, #ffffff);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Ensure full-width or spanning cards span properly across the updated layout */
+.dashboard-card.wide {
+    grid-column: span 2;
+}
+
+@media (max-width: 768px) {
+    .admin-dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    .dashboard-card.wide {
+        grid-column: span 1;
+    }
+}

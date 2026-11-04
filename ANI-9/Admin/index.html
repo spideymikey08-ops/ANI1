@@ -16,11 +16,11 @@
     <div class="app">
         <!-- Admin Navigation Sidebar -->
         <aside class="sidebar" id="sidebar">
-    <div class="brand">
-        <i class="fa-solid fa-seedling"></i>
-        <strong>Ani</strong>
-        <span class="admin-badge-pill">Admin</span>
-    </div>
+            <div class="brand">
+                <i class="fa-solid fa-seedling"></i>
+                <strong>Ani</strong>
+                <span class="admin-badge-pill">Admin</span>
+            </div>
             
             <nav class="admin-nav">
                 <button type="button" class="active" data-view="overview">
@@ -61,7 +61,6 @@
                  VIEW 1: OVERVIEW DASHBOARD
                  =================================================================== -->
             <section id="viewOverview" class="admin-view">
-                
                 <div class="stats-grid dashboard-stats">
                     <div class="stat-card">
                         <div class="stat-icon users-icon">
@@ -86,24 +85,16 @@
                         <div class="stat-label">Active Users</div>
                         <div class="stat-val" id="statActiveUsers">0</div>
                     </div>
-
-                    <div class="stat-card">
-                        <div class="stat-icon pending-icon">
-                            <i class="fa-solid fa-user-clock"></i>
-                        </div>
-                        <div class="stat-label">Pending Users</div>
-                        <div class="stat-val" id="statPendingUsers">0</div>
-                    </div>
                 </div>
-
             </section>
 
             <!-- ===================================================================
-                 VIEW 3: PLOT MANAGEMENT
+                 VIEW 2: PLOT MANAGEMENT
                  =================================================================== -->
             <section id="viewPlots" class="admin-view" hidden>
                 <div class="section-toolbar">
                     <div class="toolbar-actions">
+                        <button type="button" onclick="openModal('plotModal')">＋ Add Plot</button>
                     </div>
                 </div>
 
@@ -127,9 +118,8 @@
                 </div>
             </section>
 
-
             <!-- ===================================================================
-                 VIEW 7: USER MANAGEMENT
+                 VIEW 3: USER MANAGEMENT (Pending accounts filtered out)
                  =================================================================== -->
             <section id="viewUsers" class="admin-view" hidden>
                <div class="section-toolbar">
@@ -159,7 +149,7 @@
             </section>
 
             <!-- ===================================================================
-                 VIEW 8: SYSTEM MAINTENANCE
+                 VIEW 4: SYSTEM MAINTENANCE
                  =================================================================== -->
             <section id="viewMaintenance" class="admin-view" hidden>
                 <div class="section-toolbar"></div>
@@ -234,7 +224,7 @@
 
                     <label>
                         Username
-                        <input type="text" name="username" id="userUsername" required placeholder="username (letters, numbers, _)">
+                        <input type="text" name="username" id="userUsername" required placeholder="username">
                     </label>
 
                     <div id="userPasswordGroup">
@@ -251,7 +241,6 @@
                             <option value="admin">Administrator</option>
                         </select>
                     </label>
-
 
                     <div class="modal-footer">
                         <button type="button" class="btn-icon" data-close="userModal">Cancel</button>

@@ -8,7 +8,6 @@ let currentId = null;   // plot currently shown in the details modal
  
 /* ---------- Rendering ---------- */
  
-/* A plot card that opens the details modal when clicked */
 function overviewCard(p) {
     const card = plotCard(p);
     card.dataset.id = p.id;
@@ -25,7 +24,6 @@ async function loadPlots() {
  
         render(document.getElementById('plotOverview'), plots.map(overviewCard));
  
-        // keep the details modal in sync after a save / planting update
         if (!detailModal.hidden) {
             const p = plots.find(x => x.id == currentId);
             p ? showDetails(p) : closeDetails();
@@ -35,8 +33,7 @@ async function loadPlots() {
     }
 }
 
-/* ---------- Add a plot (button opens a popup form) ---------- */
- 
+/* ---------- Add a plot ---------- */
 function openPlotModal() {
     plotModal.hidden = false;
     plotModal.querySelector('input[name="name"]').focus();
@@ -67,8 +64,7 @@ document.getElementById('plotForm').addEventListener('submit', async e => {
     }
 });
  
-/* ---------- Plot details (click a plot card) ---------- */
- 
+/* ---------- Plot details & editing ---------- */
 function showDetails(p) {
     currentId = p.id;
  
@@ -116,8 +112,6 @@ detailModal.addEventListener('click', e => {
     if (e.target === detailModal) closeDetails();
 });
  
-/* ---------- Details actions: save / plant / delete ---------- */
- 
 async function savePlot() {
     try {
         await post('Plots/update_plot.php', {
@@ -126,7 +120,7 @@ async function savePlot() {
             crop_type: 'Rice',
             status: document.getElementById('detailStatus').value
         });
-        toast('Plot updated.');
+        toast('Plot updated successfully.');
         loadPlots();
     } catch (e) {
         toast(e.message, true);
@@ -134,7 +128,7 @@ async function savePlot() {
 }
  
 async function deletePlot(id) {
-    if (!confirm('Delete this plot and its related records?')) return;
+    if (!confirm('Are you sure you want to delete this plot and its related records?')) return;
  
     try {
         await post('Plots/delete_plot.php', { id });
@@ -155,7 +149,6 @@ document.getElementById('detailPlant').addEventListener('click', () => {
 });
  
 /* ---------- Planting modal ---------- */
- 
 function openPlanting(id) {
     const p = plots.find(x => x.id == id);
     if (!p) return;
@@ -181,14 +174,13 @@ function closePlanting() {
 document.getElementById('plantClose').addEventListener('click', closePlanting);
  
 plantModal.addEventListener('click', e => {
-    if (e.target === plantModal) closePlanting();   // click on the dark backdrop
+    if (e.target === plantModal) closePlanting();
 });
  
 document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
     if (!plantModal.hidden) closePlanting();
     else if (!detailModal.hidden) closeDetails();
-
 });
  
 plantForm.addEventListener('submit', async e => {
