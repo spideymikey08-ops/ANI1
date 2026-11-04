@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ani — Administrator Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/base.css">
+    <link rel="stylesheet" href="../assets/css/layout.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="../assets/css/theme.css">
+</head>
+<body data-page="admin">
+    <div class="app">
+        <!-- Admin Navigation Sidebar -->
+        <aside class="sidebar" id="sidebar">
+    <div class="brand">
+        <i class="fa-solid fa-seedling"></i>
+        <strong>Ani</strong>
+        <span class="admin-badge-pill">Admin</span>
+    </div>
+            
+            <nav class="admin-nav">
+                <button type="button" class="active" data-view="overview">
+                    <i class="fa-solid fa-chart-pie"></i> Dashboard
+                </button>
+
+                <button type="button" data-view="users">
+                    <i class="fa-solid fa-users"></i> User Management
+                </button>
+
+                <button type="button" data-view="plots">
+                    <i class="fa-solid fa-table-cells-large"></i> Plot Management
+                </button>
+
+                <button type="button" data-view="maintenance" class="maintenance-nav">
+                    <i class="fa-solid fa-gear"></i> System Maintenance
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Main Workspace Area -->
+        <main class="main">
+            <!-- Header Top Bar -->
+            <header class="page-header header-top-bar">
+                <div>
+                    <h1 id="pageTitle">Administrator Dashboard</h1>
+                    <p id="pageSubtitle">System overview, farm operations, user accounts, and system maintenance.</p>
+                </div>
+
+                <div class="side-note header-user-wrap">
+                    <div id="sidebarUser" class="side-user"><i class="fa-solid fa-circle-user"></i> Admin</div>
+                    <a href="../Dashboard/index.html" class="farmer-switch-btn"><i class="fa-solid fa-wheat-awn"></i> Farmer View</a>
+                    <a href="#" id="logoutBtn" class="logout-link"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+                </div>
+            </header>
+
+            <!-- ===================================================================
+                 VIEW 1: OVERVIEW DASHBOARD
+                 =================================================================== -->
+            <section id="viewOverview" class="admin-view">
+                
+                <div class="stats-grid dashboard-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon users-icon">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <div class="stat-label">Total Users</div>
+                        <div class="stat-val" id="statUsers">0</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon plots-icon">
+                            <i class="fa-solid fa-seedling"></i>
+                        </div>
+                        <div class="stat-label">Total Plots</div>
+                        <div class="stat-val" id="statPlots">0</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon active-icon">
+                            <i class="fa-solid fa-user-check"></i>
+                        </div>
+                        <div class="stat-label">Active Users</div>
+                        <div class="stat-val" id="statActiveUsers">0</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon pending-icon">
+                            <i class="fa-solid fa-user-clock"></i>
+                        </div>
+                        <div class="stat-label">Pending Users</div>
+                        <div class="stat-val" id="statPendingUsers">0</div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- ===================================================================
+                 VIEW 3: PLOT MANAGEMENT
+                 =================================================================== -->
+            <section id="viewPlots" class="admin-view" hidden>
+                <div class="section-toolbar">
+                    <div class="toolbar-actions">
+                    </div>
+                </div>
+
+                <div class="card table-responsive">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Plot Name</th>
+                                <th>Owner</th>
+                                <th>Crop Type</th>
+                                <th>Status</th>
+                                <th>Current Planting</th>
+                                <th>Planted Date</th>
+                                <th>Expected Harvest</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="plotsTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+
+            <!-- ===================================================================
+                 VIEW 7: USER MANAGEMENT
+                 =================================================================== -->
+            <section id="viewUsers" class="admin-view" hidden>
+               <div class="section-toolbar">
+                    <div class="toolbar-actions">
+                        <button type="button" id="openAddUserModal">＋ Add New User</button>
+                    </div>
+                </div>
+
+                <div class="card table-responsive">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Full Name</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Registered</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ===================================================================
+                 VIEW 8: SYSTEM MAINTENANCE
+                 =================================================================== -->
+            <section id="viewMaintenance" class="admin-view" hidden>
+                <div class="section-toolbar"></div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <!-- Backup Card -->
+                    <div class="card">
+                        <h2>Database Backup</h2>
+                        <p>Generate a complete, restorable <code>.sql</code> backup containing all tables, schema structures, and data records.</p>
+                        
+                        <div style="background: #fbf9f4; border: 1px solid #e3dac5; border-radius: 8px; padding: 16px; margin-bottom: 18px;">
+                            <strong>🛡️ Backup Safety Information</strong>
+                            <p style="margin: 6px 0 0; font-size: 13px; color: #555;">
+                                Regular backups safeguard farm transactions, user accounts, and plot records. You can import the generated file directly in phpMyAdmin to restore the database.
+                            </p>
+                        </div>
+
+                        <a href="backup.php" id="downloadBackupBtn" class="action-btn" style="display: inline-flex; align-items: center; gap: 8px; background: #17371f; color: #fff; padding: 10px 18px; border-radius: 8px; text-decoration: none; font-weight: bold;">
+                            <span>💾</span> Download Database Backup (.sql)
+                        </a>
+                        <p id="backupConfirmMsg" style="color: #27ae60; font-weight: 600; margin-top: 10px;" hidden>✓ Database backup generated successfully.</p>
+                    </div>
+
+                    <!-- Logs Card -->
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <h2 style="margin: 0;">System Audit Logs</h2>
+                            <button type="button" id="clearLogsBtn" class="btn-icon danger">Clear Logs</button>
+                        </div>
+                        <p>System activities, logins, backup actions, and administrative changes.</p>
+
+                        <div id="fullAuditLogs" style="max-height: 400px; overflow-y: auto; border: 1px solid #e3dac5; border-radius: 8px; background: #fff;"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- ===================================================================
+         MODALS
+         =================================================================== -->
+    
+    <!-- User Modal (Add / Edit) -->
+    <div id="userModal" class="modal-overlay" hidden>
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 id="userModalTitle">Add New User</h3>
+                <button type="button" class="modal-close" data-close="userModal">✕</button>
+            </div>
+            <div class="modal-body">
+                <form id="userForm">
+                    <input type="hidden" name="action" id="userFormAction" value="create">
+                    <input type="hidden" name="id" id="userFormId">
+
+                    <label>
+                        Full Name
+                        <input type="text" name="full_name" id="userFullName" required placeholder="e.g. Maria Santos">
+                    </label>
+
+                    <label>
+                        Email Address
+                        <input type="email" name="email" id="userEmail" required placeholder="user@ani.local">
+                    </label>
+
+                    <label>
+                        Phone Number
+                        <input type="text" name="phone" id="userPhone" placeholder="09123456789">
+                    </label>
+
+                    <label>
+                        Username
+                        <input type="text" name="username" id="userUsername" required placeholder="username (letters, numbers, _)">
+                    </label>
+
+                    <div id="userPasswordGroup">
+                        <label>
+                            Password
+                            <input type="password" name="password" id="userPassword" placeholder="Minimum 6 characters">
+                        </label>
+                    </div>
+
+                    <label>
+                        Role
+                        <select name="role" id="userRole">
+                            <option value="user">User (Farmer)</option>
+                            <option value="admin">Administrator</option>
+                        </select>
+                    </label>
+
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn-icon" data-close="userModal">Cancel</button>
+                        <button type="submit" id="userSubmitBtn">Save User</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reset Password Modal -->
+    <div id="resetPassModal" class="modal-overlay" hidden>
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3>Reset Password</h3>
+                <button type="button" class="modal-close" data-close="resetPassModal">✕</button>
+            </div>
+            <div class="modal-body">
+                <form id="resetPassForm">
+                    <input type="hidden" name="action" value="reset_password">
+                    <input type="hidden" name="id" id="resetPassUserId">
+                    <p>Enter a new password for user: <strong id="resetPassUsername"></strong></p>
+
+                    <label>
+                        New Password
+                        <input type="password" name="password" id="resetPassInput" required minlength="6" placeholder="At least 6 characters">
+                    </label>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn-icon" data-close="resetPassModal">Cancel</button>
+                        <button type="submit">Update Password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Plot Modal -->
+    <div id="plotModal" class="modal-overlay" hidden>
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3>Add Rice Plot</h3>
+                <button type="button" class="modal-close" data-close="plotModal">✕</button>
+            </div>
+            <div class="modal-body">
+                <form id="adminPlotForm">
+                    <label>
+                        Plot Name
+                        <input type="text" name="name" required placeholder="e.g. Plot 4 - West Paddy">
+                    </label>
+
+                    <input type="hidden" name="crop_type" value="Rice">
+
+                    <label>
+                        Initial Status
+                        <select name="status">
+                            <option value="Available">Available</option>
+                            <option value="Planted">Planted</option>
+                            <option value="Maintenance">Maintenance</option>
+                        </select>
+                    </label>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn-icon" data-close="plotModal">Cancel</button>
+                        <button type="submit">Add Plot</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Plant Plot Modal -->
+    <div id="plantPlotModal" class="modal-overlay" hidden>
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3>Record Planting</h3>
+                <button type="button" class="modal-close" data-close="plantPlotModal">✕</button>
+            </div>
+            <div class="modal-body">
+                <form id="adminPlantForm">
+                    <input type="hidden" name="plot_id" id="plantPlotId">
+                    <p>Assign planting for: <strong id="plantPlotName"></strong></p>
+
+                    <label>
+                        Rice Variety
+                        <input type="text" name="variety" placeholder="e.g. NSIC Rc 222 (Tubigan 18)">
+                    </label>
+
+                    <label>
+                        Planted Date
+                        <input type="date" name="planted_date" id="plantDateInput" required>
+                    </label>
+
+                    <label>
+                        Expected Harvest Date
+                        <input type="date" name="expected_harvest_date" id="expectedHarvestInput">
+                    </label>
+
+                    <label>
+                        Notes
+                        <textarea name="notes" placeholder="Notes on seeding method, fertilizer baseline..."></textarea>
+                    </label>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn-icon" data-close="plantPlotModal">Cancel</button>
+                        <button type="submit">Save Planting</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core Scripts -->
+    <script src="../assets/js/core.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>
