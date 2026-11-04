@@ -1,6 +1,6 @@
 <?php
 define('PUBLIC_ENDPOINT', true);
-require __DIR__ . '/../config.php';
+require _DIR_ . '/../config.php';
 
 $d = input();
 
@@ -39,7 +39,7 @@ $s->execute([
     $phone,
     $username,
     password_hash($password, PASSWORD_DEFAULT),
-    'pending'
+    'active'
 ]);
 
-json_ok(['message' => 'Registration submitted. Please wait for administrator approval before logging in.']);
+json_ok(['message' => 'Registration successful. You can now log in.']);
