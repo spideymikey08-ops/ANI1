@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Ani — Plots</title>
+    <link rel="stylesheet" href="../assets/css/base.css">
+    <link rel="stylesheet" href="../assets/css/layout.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <link rel="stylesheet" href="plots.css">
+    <link rel="stylesheet" href="../Chat/chat.css">
+    <script>if (!localStorage.getItem('ani_user')) document.documentElement.style.visibility = 'hidden';</script>
+</head>
+<body data-page="plots">
+    <div class="app">
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <main class="main">
+            <header class="page-header header-top-bar">
+                <div>
+                 <h1>Plots</h1>
+                    <p>Add new plots, edit existing ones, and manage what's currently planted.</p>
+                </div>
+
+                <div class="side-note header-user-wrap">
+                    <div id="sidebarUser" class="side-user" hidden></div>
+                    <a href="#" id="logoutBtn" class="logout-link">🚪 Logout</a>
+                </div>
+            </header>
+
+            <section class="card">
+                <div class="card-head">
+                    <div>
+                        <h2>Plot Overview</h2>
+                        <p>A quick visual of every plot</p>
+                    </div>
+                    <div class="card-head-actions">
+                        <div class="view-toggle" role="group" aria-label="View Mode">
+                            <button type="button" class="view-btn active" id="view3dBtn" title="3D Isometric Map">
+                                <i class="fa-solid fa-cube"></i> 3D Map
+                            </button>
+                            <button type="button" class="view-btn" id="viewGridBtn" title="Standard Card Grid">
+                                <i class="fa-solid fa-table-cells-large"></i> Grid
+                            </button>
+                        </div>
+                        <button type="button" id="addGlobalTaskBtn" class="task-head-btn">＋ Add Task</button>
+                        <button type="button" id="addPlotBtn">＋ Add Plot</button>
+                    </div>
+                </div>
+
+                <!-- 3D Isometric View -->
+                <div id="isometricSection" class="iso-section">
+                    <div class="iso-farm-canvas">
+                        <div id="isometricBoard" class="iso-plots-grid"></div>
+                    </div>
+
+                    <!-- Farm Legend -->
+                    <div class="farm-legend">
+                        <div class="legend-item">
+                            <span class="legend-swatch swatch-available"></span>
+                            <span>Available</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-swatch swatch-planted"></span>
+                            <span>Planted</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-swatch swatch-maintenance"></span>
+                            <span>Maintenance</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-pin">
+                                <i class="fa-solid fa-location-dot"></i>
+                            </span>
+                            <span>Pending tasks</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Standard 2D Grid (toggled or on small screens) -->
+                <div id="plotOverview" class="plot-grid" hidden></div>
+            </section>
+
+            <!-- Floating Hover Tooltip -->
+            <div id="isoTooltip" class="iso-tooltip" hidden></div>
+
+            <!-- Plot Pending Tasks Modal -->
+            <div id="plotTasksModal" class="modal" hidden>
+                <div class="modal-box task-modal-box">
+                    <button type="button" class="close" id="plotTasksClose" aria-label="Close">×</button>
+
+                    <div class="task-modal-header">
+                        <div>
+                            <h2>Tasks — <span id="plotTasksTitle"></span></h2>
+                            <p class="modal-sub">Pending chores and field operations</p>
+                        </div>
+                        <span class="badge" id="plotTasksBadge">0 Pending</span>
+                    </div>
+
+                    <div id="plotTasksList" class="plot-tasks-list">
+                        <!-- Populated dynamically -->
+                    </div>
+
+                    <div class="task-quick-add">
+                        <form id="plotQuickTaskForm">
+                            <input type="hidden" name="plot_id" id="quickTaskPlotId">
+                            <div class="form-row">
+                                <label>
+                                    Task Type
+                                    <select name="task_type" required>
+                                        <option value="Water">💧 Water</option>
+                                        <option value="Fertilize">🌾 Fertilize</option>
+                                        <option value="Weed">🌿 Weed</option>
+                                        <option value="Pest Control">🐛 Pest Control</option>
+                                        <option value="Inspect">🔍 Inspect</option>
+                                        <option value="Other">📝 Other</option>
+                                    </select>
+                                </label>
+                                <label>
+                                    Date
+                                    <input type="date" name="task_date" id="quickTaskDate" required>
+                                </label>
+                            </div>
+                            <button type="submit" class="small-btn">＋ Add Task</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add plot -->
+            <div id="plotModal" class="modal" hidden>
+                <div class="modal-box">
+                    <button type="button" class="close" id="plotClose" aria-label="Close">×</button>
+
+                    <h2>Add a New Plot</h2>
+
+                    <form id="plotForm">
+                        <label>
+                            Plot Name
+                            <input name="name" required placeholder="e.g. Plot B1">
+                        </label>
+
+                        <label>
+                            Status
+                            <select name="status">
+                                <option>Available</option>
+                                <option>Planted</option>
+                                <option>Maintenance</option>
+                            </select>
+                        </label>
+
+                        <button>＋ Add Plot</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Plot details -->
+            <div id="detailModal" class="modal" hidden>
+                <div class="modal-box">
+                    <button type="button" class="close" id="detailClose" aria-label="Close">×</button>
+
+                    <h2>Plot Details</h2>
+
+                    <div class="detail-form">
+                        <label>
+                            Plot Name
+                            <input id="detailName">
+                        </label>
+
+                        <label>
+                            Status
+                            <select id="detailStatus">
+                                <option>Available</option>
+                                <option>Planted</option>
+                                <option>Maintenance</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <dl class="detail-list">
+                        <div><dt>Current planting</dt><dd data-detail="planting"></dd></div>
+                        <div><dt>Planted</dt><dd data-detail="planted"></dd></div>
+                        <div><dt>Expected harvest</dt><dd data-detail="harvest"></dd></div>
+                        <div><dt>Notes</dt><dd data-detail="notes"></dd></div>
+                    </dl>
+
+                    <div class="detail-actions">
+                        <button type="button" id="detailSave">Save</button>
+                        <button type="button" class="small-btn" id="detailTasksBtn">📋Tasks(<span id="detailTasksBadge">0</span>)</button>
+                        <button type="button" class="small-btn" id="detailPlant">✏️</button>
+                        <button type="button" class="small-btn danger" id="detailDelete">🗑️</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Planting -->
+            <div id="plantModal" class="modal" hidden>
+                <div class="modal-box">
+                    <button type="button" class="close" id="plantClose" aria-label="Close">×</button>
+
+                    <h2>Planting — <span id="plantTitle"></span></h2>
+
+                    <form id="plantForm">
+                        <input type="hidden" name="plot_id">
+                        <input type="hidden" name="planting_id">
+
+                        <label>
+                            Crop / Plant Name
+                            <input type="hidden" name="crop_name" value="Rice">
+                            <input value="Rice" readonly>
+                        </label>
+
+                        <label>
+                            Variety
+                            <input name="variety" placeholder="e.g. IR64">
+                        </label>
+
+                        <div class="form-row">
+                            <label>
+                                Planted Date
+                                <input type="date" name="planted_date" required>
+                            </label>
+
+                            <label>
+                                Expected Harvest
+                                <input type="date" name="expected_harvest_date">
+                            </label>
+                        </div>
+
+                        <label>
+                            Notes
+                            <textarea name="notes" placeholder="Optional notes"></textarea>
+                        </label>
+
+                        <button>＋ Save Planting</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <template id="tpl-plot-card">
+        <div class="plot-card">
+            <strong data-field="name"></strong>
+            <span class="badge" data-badge="crop"></span>
+            <div>
+                <span class="badge" data-badge="crop"></span>
+                <span class="badge" data-badge="status"></span>
+            </div>
+        </div>
+    </template>
+
+    <script src="../assets/js/core.js"></script>
+    <script src="../assets/js/layout.js"></script>
+    <script src="plots.js"></script>
+    <script src="../Chat/chat.js"></script>
+</body>
+</html>
